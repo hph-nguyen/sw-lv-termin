@@ -45,7 +45,7 @@ export const AfterBook = () => {
               </>
             ) : (
               <Typography variant="h6">
-                <strong>Sie haben keine Termin gebucht</strong>
+                <strong>Sie haben keinen Termin gebucht</strong>
               </Typography>
             )}
           </Box>
