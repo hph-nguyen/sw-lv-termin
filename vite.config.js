@@ -3,6 +3,6 @@ import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/sw-lv-termin/",
+  base: "/sw-lv-termin",
   plugins: [react()],
 });

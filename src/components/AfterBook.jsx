@@ -30,7 +30,7 @@ export const AfterBook = () => {
           <Box sx={{ margin: 10 }}>
             {isDataValidArray ? (
               <>
-                <Typography variant="h6">
+                <Typography variant="h6" mb={2}>
                   <strong>Sie haben folgende Lehrveranstaltungen gebucht:</strong>
                 </Typography>
                 {data.map((item, index) => {
