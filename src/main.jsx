@@ -10,12 +10,12 @@ import { AfterBook } from "./components/AfterBook.jsx";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/sw-lv-termin",
     element: <App />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "/info",
+    path: "/sw-lv-termin/info",
     element: <AfterBook />,
   },
 ]);
