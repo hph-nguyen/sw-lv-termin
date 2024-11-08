@@ -121,7 +121,7 @@ function App() {
         co_dozent: data.co_dozent,
         tn_zahl: data.tn_zahl,
         wartelist: data.wartelist,
-        anmerkungen: data.anmerkung,
+        anmerkung: data.anmerkung,
         rawData: { ...data },
       };
     });
