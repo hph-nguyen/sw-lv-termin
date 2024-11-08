@@ -29,24 +29,27 @@ export const AfterBook = () => {
         >
           <Box sx={{ margin: 10 }}>
             {isDataValidArray ? (
-              // Render each object in a single line, excluding empty values
-              data.map((item, index) => {
-                // Filter out empty string values from the object
-                const nonEmptyValues = Object.values(item).filter((value) => value !== "");
+              <>
+                <Typography variant="h6">
+                  <strong>Sie haben folgende Lehrveranstaltungen gebucht:</strong>
+                </Typography>
+                {data.map((item, index) => {
+                  const nonEmptyValues = Object.values(item).filter((value) => value !== "");
 
-                return (
-                  <Typography key={index} variant="h6" sx={{ marginBottom: 1 }}>
-                    <strong>{nonEmptyValues.length > 0 && nonEmptyValues.join(" - ")}</strong>
-                  </Typography>
-                );
-              })
+                  return (
+                    <Typography key={index} variant="h6" sx={{ marginBottom: 1 }}>
+                      <strong>{nonEmptyValues.length > 0 && nonEmptyValues.join(" - ")}</strong>
+                    </Typography>
+                  );
+                })}
+              </>
             ) : (
               <Typography variant="h6">
                 <strong>Sie haben keine Termin gebucht</strong>
               </Typography>
             )}
           </Box>
-          <Link to="/">
+          <Link to="/sw-lv-termin">
             <Button variant="contained">Zurück</Button>
           </Link>
         </Box>
