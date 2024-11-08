@@ -20,7 +20,8 @@ const InfoModal = () => {
         <br />
         <strong>
           <i>Wintersemester: 07.10.24-16.01.25</i>
-        </strong>
+        </strong>{" "}
+        <br />
         01.11.24 Allerheiligen (vorlesungsfrei) <br />
         06.11.24 Praxismarkt (vorlesungsfrei) <br />
         03.12.24 Kollegiumskonferenz (vorlesungsfrei für Hauptamtliche) <br />
