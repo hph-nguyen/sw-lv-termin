@@ -33,7 +33,7 @@ export default function OverviewTable({ rowsData }) {
       };
     });
 
-    navigate("/info", { state: { data: infoData } });
+    navigate("/sw-lv-termin/info", { state: { data: infoData } });
     sessionStorage.clear();
   };
 
