@@ -252,7 +252,7 @@ function App() {
             }
             headerAction={
               <Tooltip
-                title="Name, Semester, Modul, LV-Title, Rhythmus & LV-Termin können nicht durch Tabelle verändert werden. Bitte löschen Sie den Termin und addieren Sie neu"
+                title="Name, Semester, Modul, LV-Titel, Rhythmus & LV-Termin können nicht durch Tabelle verändert werden. Bitte löschen Sie den Termin und addieren Sie neu"
                 arrow
               >
                 <IconButton aria-label="info">
