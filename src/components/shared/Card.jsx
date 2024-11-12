@@ -16,7 +16,7 @@ const Card = ({ title, children, sx, sxContent, subTitle, headerAction }) => {
           }}
           subheader={subTitle}
           title={
-            <Typography variant="h4">
+            <Typography variant="h3">
               <strong>{title}</strong>
             </Typography>
           }

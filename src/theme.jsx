@@ -26,7 +26,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
-    fontSize: 12,
+    fontSize: 14,
     h1: {
       fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
       fontSize: 40,
@@ -50,6 +50,10 @@ const theme = createTheme({
     h6: {
       fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
       fontSize: 14,
+    },
+    h7: {
+      fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+      fontSize: 12,
     },
   },
 });

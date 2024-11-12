@@ -9,7 +9,7 @@ export default function MUIAccordion({ header, children }) {
     <div>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>
+          <Typography variant="h5">
             <strong>{header}</strong>
           </Typography>
         </AccordionSummary>

@@ -1,4 +1,4 @@
-import { TextField, MenuItem } from "@mui/material";
+import { TextField, MenuItem, Typography } from "@mui/material";
 import { useField, useFormikContext } from "formik";
 import { useEffect } from "react";
 
@@ -23,14 +23,22 @@ const SelectWrapper = ({ name, options, size = "small", defaultValue, helperText
     select: true,
     variant: "outlined",
     // fullWidth: true,
-    helperText: helperText,
+    helperText: (
+      <Typography variant="h7">
+        <i>{helperText}</i>
+      </Typography>
+    ),
     // defaultValue: defaultValue,
     onChange: onChange || handleChange,
   };
 
   if (meta && meta.touched && meta.error) {
     configSelect.error = true;
-    configSelect.helperText = meta.error;
+    configSelect.helperText = (
+      <Typography variant="h7">
+        <i>{meta.error}</i>
+      </Typography>
+    );
   }
 
   return (

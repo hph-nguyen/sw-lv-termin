@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { Box, TextField, IconButton, Tooltip } from "@mui/material";
+import { Box, TextField, IconButton, Tooltip, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Card from "./components/shared/Card";
@@ -208,9 +208,11 @@ function App() {
                 disabled
                 value={user.mail}
                 helperText={
-                  <i>
-                    <strong>Email wird automatisch generiert. Bitte überprüfen</strong>
-                  </i>
+                  <Typography variant="h7">
+                    <i>
+                      <strong>Email wird automatisch generiert. Bitte überprüfen</strong>
+                    </i>
+                  </Typography>
                 }
               />
 

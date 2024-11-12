@@ -1,7 +1,7 @@
-import { TextField } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { useField } from "formik";
 
-export default function TextfieldWrapper({ name, span, ...otherProps }) {
+export default function TextfieldWrapper({ name, span, helperText, ...otherProps }) {
   const [field, meta] = useField(name);
 
   const configTextfield = {
@@ -17,5 +17,15 @@ export default function TextfieldWrapper({ name, span, ...otherProps }) {
     configTextfield.helperText = meta.error;
   }
 
-  return <TextField sx={{ gridColumn: `span ${span}` }} {...configTextfield} />;
+  return (
+    <TextField
+      sx={{ gridColumn: `span ${span}` }}
+      {...configTextfield}
+      helperText={
+        <Typography variant="h7">
+          <i>{helperText}</i>
+        </Typography>
+      }
+    />
+  );
 }

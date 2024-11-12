@@ -101,7 +101,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   <FormInput
                     name={"lv_title"}
                     label="LV-Titel auswählen"
-                    helperText={<i>Bitte Titel der Veranstaltung eingeben</i>}
+                    helperText={"Bitte Titel der Veranstaltung eingeben"}
                   />
                 )}
 
@@ -136,10 +136,8 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                     rhythmusInfo ? (
                       <>
                         <ErrorOutline sx={{ fontSize: "small", mr: 0.5 }} />
-                        <i>
-                          <strong>Nur nach Absprache</strong>, für mehr Informationen klicken Sie bitte auf{" "}
-                          <strong>Hinweise</strong>
-                        </i>
+                        <strong>Nur nach Absprache</strong>, für mehr Informationen klicken Sie bitte auf{" "}
+                        <strong>Hinweise</strong>
                       </>
                     ) : (
                       ""
@@ -150,7 +148,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                 <FormInput
                   name={"co_dozent"}
                   label="Co-Dozent:innen"
-                  helperText={<i>Eingabenformat: Vorname, Nachname & Vorname, Nachname...</i>}
+                  helperText={"Eingabenformat: Vorname, Nachname & Vorname, Nachname..."}
                 />
 
                 {/* TODO DROPDOWN FOR HYBRID HIER */}
