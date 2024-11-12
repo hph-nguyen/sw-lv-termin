@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   Box,
   Button,
@@ -53,10 +54,6 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
     },
   };
 
-  const [serienDisabled, setSerienDisabled] = useState(true);
-  const [bkDisabled, setBkDisabled] = useState(true);
-  const [rhythmusInfo, setRhythmusInfo] = useState(false);
-
   const checkoutSchema = yup.object().shape({
     semester: yup.string().required("Bitte auswählen"),
     module: yup.string().required("Bitte auswählen"),
@@ -76,6 +73,10 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
           filteredLectures = filteredLectures.map((e) => {
             return { value: e, label: e };
           });
+
+          const [serienDisabled, setSerienDisabled] = useState(true);
+          const [bkDisabled, setBkDisabled] = useState(true);
+          const [rhythmusInfo, setRhythmusInfo] = useState(false);
 
           return (
             <form onSubmit={handleSubmit} onReset={handleReset}>
