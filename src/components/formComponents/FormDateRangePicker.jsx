@@ -4,7 +4,8 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css"; // Theme for flatpickr
 import { TextField } from "@mui/material";
 import { German } from "flatpickr/dist/l10n/de.js";
-import moment from "moment";
+// import moment from "moment";
+import dayjs from "dayjs";
 
 export default function DateRangePicker({ name, startValue = "", mode = "multiple", ...otherProps }) {
   const [date, setDate] = useState(startValue);
@@ -16,7 +17,7 @@ export default function DateRangePicker({ name, startValue = "", mode = "multipl
     let temp = [];
     if (field.value) {
       temp = field.value.map((e) => {
-        return moment(e).format("DD.MM.YYYY");
+        return dayjs(e).format("DD.MM.YYYY");
       });
       setDate(temp);
     } else setDate("");

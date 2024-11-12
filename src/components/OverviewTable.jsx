@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Box, Select, MenuItem } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
+import SendIcon from "@mui/icons-material/Send";
 import { GridRowModes, GridToolbar, DataGrid, GridActionsCellItem, GridRowEditStopReasons } from "@mui/x-data-grid";
 import { deDE } from "@mui/x-data-grid/locales";
 
 import { redAccent } from "../theme";
-import moment from "moment";
+// import moment from "moment";
+import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 export default function OverviewTable({ rowsData }) {
@@ -30,6 +31,7 @@ export default function OverviewTable({ rowsData }) {
         bktitle: data.bktitle,
         rhythmus: data.rhythmus,
         lv_termin: data.lv_termin,
+        vformat: data.vformat,
       };
     });
 
@@ -82,14 +84,17 @@ export default function OverviewTable({ rowsData }) {
     // console.log(rows);
     sessionStorage.setItem("tableData", JSON.stringify(rows));
     const newTerminList = rows.map((e) => {
+      // console.log(dayjs(e.firstdate).isValid());
       return {
         ...e.rawData,
-        firstdate: moment(e.firstdate).isValid() ? moment(e.firstdate).format("YYYY-MM-DD") : "",
+        firstdate: dayjs(e.firstdate).isValid() ? dayjs(e.firstdate).format("YYYY-MM-DD") : "invalid",
         raumwunsch: e.raumwunsch,
         co_dozent: e.co_dozent,
         tn_zahl: e.tn_zahl,
         wartelist: e.wartelist,
         anmerkungen: e.anmerkungen,
+        vformat: e.vformat,
+        bktitle: e.bktitle,
       };
     });
     sessionStorage.setItem("terminList", JSON.stringify(newTerminList));
@@ -100,8 +105,8 @@ export default function OverviewTable({ rowsData }) {
     { field: "vorname", headerName: "Vorname", editable: false, type: "string", flex: 0.5 },
     { field: "semester", headerName: "Semester", editable: false, type: "string", flex: 0.5 },
     { field: "module", headerName: "Modul", editable: false, type: "string", flex: 1 },
-    { field: "lv_title", headerName: "LV-Title", editable: false, type: "string", flex: 1 },
-    { field: "bktitle", headerName: "BK-Title (Opt.)", editable: false, type: "string", flex: 1 },
+    { field: "lv_title", headerName: "LV-Titel", editable: false, type: "string", flex: 1 },
+    { field: "bktitle", headerName: "BK-Titel (Opt.)", editable: true, type: "string", flex: 1 },
     { field: "rhythmus", headerName: "Rhythmus", editable: false, type: "string", flex: 1 },
     { field: "lv_termin", headerName: "LV-Termin", editable: false, type: "string", flex: 1 },
     {
@@ -117,16 +122,46 @@ export default function OverviewTable({ rowsData }) {
           type="date"
           value={params.value || ""}
           onChange={(event) =>
-            params.api.setEditCellValue({ id: params.id, field: params.field, value: event.target.value })
+            params.api.setEditCellValue({
+              id: params.id,
+              field: params.field,
+              value: event.target.value,
+            })
           }
         />
       ),
     },
     { field: "raumwunsch", headerName: "Raumwunsch", editable: true, type: "string", flex: 0.5 },
     { field: "co_dozent", headerName: "Co-Dozent", editable: true, type: "string", flex: 0.5 },
-    { field: "tn_zahl", headerName: "Max TN-Zahl", editable: true, type: "number", flex: 0.5 },
+    { field: "tn_zahl", headerName: "max. TN-Zahl", editable: true, type: "number", flex: 0.5 },
     { field: "wartelist", headerName: "Wartelist", editable: true, type: "string", flex: 0.5 },
     { field: "anmerkungen", headerName: "Anmerkung", editable: true, type: "string", flex: 0.5 },
+    {
+      field: "vformat",
+      headerName: "Virtulles Format",
+      editable: true,
+      type: "string",
+      flex: 0.5,
+      renderEditCell: (params) => (
+        <Select
+          sx={{ width: "100%", boxSizing: "border-box" }}
+          size="small"
+          type="select"
+          value={params.value || ""}
+          onChange={(event) =>
+            params.api.setEditCellValue({
+              id: params.id,
+              field: params.field,
+              value: event.target.value,
+            })
+          }
+        >
+          <MenuItem value="Hybrid (synchron)">Hybrid (synchron)</MenuItem>
+          <MenuItem value="Hybrid (asynchron)">Hybrid (asynchron)</MenuItem>
+          <MenuItem value="Rein digital">Rein digital</MenuItem>
+        </Select>
+      ),
+    },
     {
       field: "actions",
       type: "actions",
@@ -139,6 +174,9 @@ export default function OverviewTable({ rowsData }) {
         if (isInEditMode) {
           return [
             <GridActionsCellItem
+              localeText={{
+                toolbarExport: "Export",
+              }}
               icon={<SaveIcon />}
               label="Save"
               sx={{
@@ -197,6 +235,7 @@ export default function OverviewTable({ rowsData }) {
                 tn_zahl: false,
                 wartelist: false,
                 anmerkungen: false,
+                vformat: false,
                 // firstdate: false,
               },
             },
@@ -211,11 +250,19 @@ export default function OverviewTable({ rowsData }) {
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
           slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              printOptions: { disableToolbarButton: true },
+              csvOptions: {
+                delimiter: ";",
+              },
+            },
+          }}
         />
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button variant="contained" onClick={handleSend}>
-          Buchen
+          Buchen <SendIcon sx={{ ml: 1 }} />
         </Button>
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-export const lvLIST = [
+export const LV_LIST = [
   {
     id: 0,
     module: "1.1 Propädeutik",
@@ -186,12 +186,12 @@ export const lvLIST = [
   },
 ];
 
-export const semester = [
+export const SEMESTER = [
   { value: "SS", label: "Sommersemester" },
   { value: "WS", label: "Wintersemester" },
 ];
 
-export const weekday = [
+export const WEEKDAY = [
   { value: "0", label: "Montag" },
   { value: "1", label: "Dienstag" },
   { value: "2", label: "Mittwoch" },
@@ -200,14 +200,57 @@ export const weekday = [
   { value: "5", label: "Samstag" },
 ];
 
-export const lvRHYTHMUS = [
-  { value: "wöchentlich, ein Termin pro Woche", label: "wöchentlich, ein Termin pro Woche" },
-  { value: "wöchentlich, aber an zwei Terminen pro Woche", label: "wöchentlich, aber an zwei Terminen pro Woche" },
+export const LV_RHYTHMUS = [
+  { value: "wöchentlich", label: "wöchentlich" },
+  { value: "wöchentlich mit Zusatzterminen", label: "wöchentlich mit Zusatzterminen" },
   {
     value: "wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine",
     label: "wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine",
   },
-  { value: "vierzehntägig, dafür LV mit doppelter SWS-Zahl", label: "vierzehntägig, dafür LV mit doppelter SWS-Zahl" },
+  {
+    value: "vierzehntägig, dafür LV mit doppelter SWS-Zahl",
+    label: "vierzehntägig, dafür LV mit doppelter SWS-Zahl",
+  },
 
   { value: "Blockveranstaltung", label: "Blockveranstaltung" },
+];
+
+export const TIME_PICKER_VON = [
+  { value: "08:00", label: "08:00" },
+  { value: "08:45", label: "08:45" },
+  { value: "09:45", label: "09:45" },
+  { value: "10:30", label: "10:30" },
+  { value: "11:30", label: "11:30" },
+  { value: "12:15", label: "12:15" },
+  { value: "14:00", label: "14:00" },
+  { value: "14:45", label: "14:45" },
+  { value: "15:45", label: "15:45" },
+  { value: "16:30", label: "16:30" },
+  { value: "17:30", label: "17:30" },
+  { value: "18:15", label: "18:15" },
+  { value: "19:15", label: "19:15" },
+  { value: "20:00", label: "20:00" },
+];
+
+export const TIME_PICKER_BIS = [
+  { value: "08:45", label: "08:45" },
+  { value: "09:30", label: "09:30" },
+  { value: "10:30", label: "10:30" },
+  { value: "11:15", label: "11:15" },
+  { value: "12:15", label: "12:15" },
+  { value: "13:00", label: "13:00" },
+  { value: "14:45", label: "14:45" },
+  { value: "15:30", label: "15:30" },
+  { value: "16:30", label: "16:30" },
+  { value: "17:15", label: "17:15" },
+  { value: "18:15", label: "18:15" },
+  { value: "19:00", label: "19:00" },
+  { value: "20:00", label: "20:00" },
+  { value: "20:45", label: "20:45" },
+];
+
+export const VIRTUELLES_FORMAT = [
+  { value: "Hybrid (synchron)", label: "Hybrid (synchron)" },
+  { value: "Hybrid (asynchron)", label: "Hybrid (asynchron)" },
+  { value: "Rein digital", label: "Rein digital" },
 ];

@@ -1,19 +1,19 @@
 import { TextField } from "@mui/material";
 import { useField } from "formik";
 
-export default function DatePickerWrapper({ name, span, ...otherProps }) {
+export default function DatePickerWrapper({ name, span, size = "small", ...otherProps }) {
   const [field, meta] = useField(name);
 
   const configDateTimePicker = {
     ...field,
     ...otherProps,
     type: "date",
+    size: size,
     variant: "outlined",
     fullWidth: true,
     InputLabelProps: {
       shrink: true,
     },
-    size: "small",
   };
 
   if (meta && meta.touched && meta.error) {

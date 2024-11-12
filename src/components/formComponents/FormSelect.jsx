@@ -1,7 +1,8 @@
 import { TextField, MenuItem } from "@mui/material";
 import { useField, useFormikContext } from "formik";
+import { useEffect } from "react";
 
-const SelectWrapper = ({ name, options, size = "small", helperText, onChange, ...otherProps }) => {
+const SelectWrapper = ({ name, options, size = "small", defaultValue, helperText, onChange, ...otherProps }) => {
   const { setFieldValue } = useFormikContext();
   const [field, meta] = useField(name);
 
@@ -10,6 +11,10 @@ const SelectWrapper = ({ name, options, size = "small", helperText, onChange, ..
     setFieldValue(name, value);
     // setSelectedValue(value);
   };
+  useEffect(() => {
+    if (defaultValue) setFieldValue(name, defaultValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValue]);
 
   const configSelect = {
     ...field,
@@ -17,8 +22,9 @@ const SelectWrapper = ({ name, options, size = "small", helperText, onChange, ..
     size,
     select: true,
     variant: "outlined",
-    fullWidth: true,
+    // fullWidth: true,
     helperText: helperText,
+    // defaultValue: defaultValue,
     onChange: onChange || handleChange,
   };
 

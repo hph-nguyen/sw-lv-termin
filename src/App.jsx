@@ -3,18 +3,19 @@ import { useState, useEffect } from "react";
 import { Box, TextField, IconButton, Tooltip } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import Info from "@mui/icons-material/Info";
-
 import Card from "./components/shared/Card";
 import OverviewTable from "./components/OverviewTable";
 import Header from "./components/Header";
 
 import TerminEintrag from "./components/TerminEintrag";
-import { lvLIST } from "./dummyData";
+import { LV_LIST } from "./dummyData";
 import { randomId } from "@mui/x-data-grid-generator";
 import moment from "moment";
 import MUIDialog from "./components/shared/MUIDialog";
-import InfoModal from "./components/InfoModal";
+import InfoModal from "./components/AlleInfoModal";
+import dayjs from "dayjs";
+import AllgemeineInfo from "./components/AllgemeineInfo";
+import { InfoOutlined } from "@mui/icons-material";
 
 function App() {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -40,8 +41,8 @@ function App() {
   };
 
   const autoMailGenerate = (name, vorname) => {
-    const firstTwo = convertSpecialCharacters(vorname.substring(0, 2).trim().toLowerCase());
-    return `${convertSpecialCharacters(name.trim().toLowerCase())}${firstTwo}@th-nuernberg.de`;
+    // const firstTwo = convertSpecialCharacters(vorname.substring(0, 2).trim().toLowerCase());
+    return `${convertSpecialCharacters(vorname.trim().toLowerCase())}.${name.trim().toLowerCase()}@th-nuernberg.de`;
   };
 
   const handleNameChange = (event) => {
@@ -55,8 +56,8 @@ function App() {
   const handleTerminEintrag = (values, actions) => {
     // console.log(values);
     // eslint-disable-next-line
-    const { bk, bktemp, mitbk, ...rest } = values;
-    // console.log(bk, bktemp, mitbk, rest);
+    const { bk, bktemp, ...rest } = values;
+
     let newTerminList = [];
     let serienTermin = {};
     if (rest.wochentag !== "") {
@@ -72,25 +73,42 @@ function App() {
     }
 
     let bkTermin = [];
+    // if (bk.length > 0) {
+    //   for (let i = 0; i < bk.length; i++) {
+    //     let dates = bk[i].datum.map((date) => moment(date).format());
+    //     let temp = dates.map((date) => ({
+    //       id: randomId(),
+    //       nachname: sessionStorage.getItem("nachname"),
+    //       vorname: sessionStorage.getItem("vorname"),
+    //       datum: moment(date).format("YYYY-MM-DD"),
+    //       ...rest,
+    //       firstdate: "",
+    //       von: bk[i].bkvon,
+    //       bis: bk[i].bkbis,
+    //       bktitle: bk[i].bktitle,
+    //       wochentag: "-",
+    //     }));
+    //     bkTermin.push(...temp);
+    //   }
+    // }
     if (bk.length > 0) {
-      for (let i = 0; i < bk.length; i++) {
-        let dates = bk[i].datum.map((date) => moment(date).format());
-        let temp = dates.map((date) => ({
+      bkTermin = bk.map((e) => {
+        return {
           id: randomId(),
           nachname: sessionStorage.getItem("nachname"),
           vorname: sessionStorage.getItem("vorname"),
-          datum: moment(date).format("YYYY-MM-DD"),
+          datum: moment(e.datum).format("YYYY-MM-DD"),
           ...rest,
           firstdate: "",
-          von: bk[i].bkvon,
-          bis: bk[i].bkbis,
-          bktitle: bk[i].bktitle,
+          von: e.bkvon,
+          bis: e.bkbis,
+          bktitle: e.bktitle,
           wochentag: "-",
-        }));
-        bkTermin.push(...temp);
-      }
+        };
+      });
     }
-    console.log("bkTermin", bkTermin);
+
+    // console.log("bkTermin", bkTermin);
     newTerminList.push(...bkTermin);
 
     const oldTerminList = sessionStorage.getItem("terminList")
@@ -112,11 +130,12 @@ function App() {
         lv_title: data.lv_title,
         bktitle: data.bktitle,
         rhythmus: data.datum ? "Blockveranstaltung" : data.rhythmus,
+        vformat: data.vformat,
         lv_termin:
-          data.datum && moment(data.datum).isValid()
-            ? `${data.datum}, ${data.von}-${data.bis}`
+          data.datum && dayjs(data.datum).isValid()
+            ? `${dayjs(data.datum).format("DD.MM.YYYY")}, ${data.von}-${data.bis}`
             : `${weekday[data.wochentag]}, ${data.von}-${data.bis}`,
-        firstdate: data.firstdate,
+        firstdate: dayjs(data.firstdate).isValid() ? dayjs(data.firstdate).format("DD.MM.YYYY") : "",
         raumwunsch: data.raumwunsch,
         co_dozent: data.co_dozent,
         tn_zahl: data.tn_zahl,
@@ -194,6 +213,10 @@ function App() {
                   </i>
                 }
               />
+
+              <Box sx={{ gridColumn: "span 3" }}>
+                <AllgemeineInfo />
+              </Box>
             </Box>
           </Card>
 
@@ -205,27 +228,33 @@ function App() {
             headerAction={
               <Tooltip arrow title="Hinweise">
                 <IconButton onClick={() => setOpenInfo(true)} color="primary">
-                  <Info />
+                  <InfoOutlined />
                 </IconButton>
               </Tooltip>
             }
           >
-            <TerminEintrag moduleList={lvLIST} onSubmit={handleTerminEintrag} />
+            <TerminEintrag moduleList={LV_LIST} onSubmit={handleTerminEintrag} />
           </Card>
 
           {/* OVERVIEW TABLE */}
           <Card
             sx={{ gridColumn: "span 2" }}
             sxContent={{ p: 0 }}
-            title={"Übersichttabelle"}
-            subTitle={"Klicken Sie Spalten-Taste um alle Spalten zu zeigen"}
+            title={"Übersicht"}
+            subTitle={
+              <>
+                Klicken Sie auf die Spalten-Taste, um alle Spalten anzuzeigen
+                <br />
+                Vor dem Export als CSV bitte erst alle Spalten anzeigen
+              </>
+            }
             headerAction={
               <Tooltip
                 title="Name, Semester, Modul, LV-Title, Rhythmus & LV-Termin können nicht durch Tabelle verändert werden. Bitte löschen Sie den Termin und addieren Sie neu"
                 arrow
               >
                 <IconButton aria-label="info">
-                  <Info />
+                  <InfoOutlined />
                 </IconButton>
               </Tooltip>
             }

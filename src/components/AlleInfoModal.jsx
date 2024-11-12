@@ -14,7 +14,7 @@ const InfoModal = () => {
         </strong>
         <br />
       </Typography>
-      <MUIAccordion header={"Allgemeine Vorlesungszeiten"}>
+      {/* <MUIAccordion header={"Allgemeine Vorlesungszeiten"}>
         Insbesondere bei Blockveranstaltungen bitte ich um Beachtung der Vorlesungszeiten in Bezug auf Feiertage,
         Gremienzeit etc. Diese sind im kommenden Studienjahr wie folgt:
         <br />
@@ -52,7 +52,7 @@ const InfoModal = () => {
         <br />
         <strong>Mittwochs von 11:30-13:00 Uhr</strong> (Gremienzeit der Fakultät SW) <br />
         <strong>Donnerstags 08:00-15:30 Uhr</strong> (Fehlende Raumkapazitäten aufgrund der Schwerpunktveranstaltungen)
-      </MUIAccordion>
+      </MUIAccordion> */}
       <MUIAccordion header={'LV-Rhythmus "vierzehntägig, dafür LV mit doppelter SWS-Zahl"'}>
         Sollen Veranstaltungen vierzehntägig mit doppelter SWS-Zahl angeboten werden, ist darauf zu achten, dass eine
         andere Veranstaltung gegenläufig in den jeweils freien Wochen im gleichen Zeitfenster geplant wird. Dies kann
@@ -73,11 +73,11 @@ const InfoModal = () => {
         <strong>Bitte geben Sie hierbei unbedingt die jeweiligen maximalen Teilnehmerzahlen mit an!</strong>
       </MUIAccordion>
       <MUIAccordion header={"Digitale / Hybride Lehre"}>
-        Um die Planbarkeit für die Studierenden zu erhöhen bitte ich bei digitalen / hybriden Lehrformaten jeweils um
+        {/* Um die Planbarkeit für die Studierenden zu erhöhen bitte ich bei digitalen / hybriden Lehrformaten jeweils um
         entsprechende Angabe einer der folgenden Kategorien im Feld <strong>Raumwunsch</strong> der jeweiligen
         Veranstaltung
         <br />
-        <br />
+        <br /> */}
         <strong>Hybride Vollversion (HV)</strong>
         <br />
         Die Veranstaltung wird durchgängig oder an ausgewählten festgelegten Terminen (Termine werden angegeben) hybrid

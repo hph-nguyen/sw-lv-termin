@@ -10,24 +10,19 @@ import {
   TableHead,
   TableRow,
   Paper,
-  FormControlLabel,
-  Checkbox,
+  // FormControlLabel,
+  // Checkbox,
 } from "@mui/material";
 import { useState } from "react";
 import { Formik } from "formik";
-import { Add, Delete } from "@mui/icons-material";
+import { Add, Delete, ErrorOutline } from "@mui/icons-material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import moment from "moment";
+// import moment from "moment";
+import dayjs from "dayjs";
 import * as yup from "yup";
 
-import {
-  FormDatePicker,
-  FormDateRangePicker,
-  FormInput,
-  FormSelect,
-  FormTimePicker,
-} from "../components/formComponents";
-import { lvRHYTHMUS, semester, weekday } from "../dummyData";
+import { FormDatePicker, FormInput, FormSelect } from "../components/formComponents";
+import { LV_RHYTHMUS, TIME_PICKER_VON, TIME_PICKER_BIS, SEMESTER, WEEKDAY, VIRTUELLES_FORMAT } from "../dummyData";
 import { redAccent } from "../theme";
 
 const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
@@ -39,11 +34,12 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
     lv_title: "",
     co_dozent: "",
     rhythmus: "",
+    vformat: "",
     anmerkungen: "",
     tn_zahl: "",
     wartelist: "",
     raumwunsch: "",
-    mitbk: false,
+    // mitbk: false,
     firstdate: "",
     wochentag: "",
     von: "",
@@ -56,6 +52,10 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
       datum: "",
     },
   };
+
+  const [serienDisabled, setSerienDisabled] = useState(true);
+  const [bkDisabled, setBkDisabled] = useState(true);
+  const [rhythmusInfo, setRhythmusInfo] = useState(false);
 
   const checkoutSchema = yup.object().shape({
     semester: yup.string().required("Bitte auswählen"),
@@ -77,9 +77,6 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
             return { value: e, label: e };
           });
 
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [serienDisabled, setSerienDisabled] = useState(true);
-
           return (
             <form onSubmit={handleSubmit} onReset={handleReset}>
               <Box
@@ -90,16 +87,21 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   "& > div": { gridColumn: isNonMobile ? undefined : "span 3" },
                 }}
               >
-                <FormSelect name="semester" label="Semester" options={semester} />
+                <FormSelect name="semester" label="Semester" options={SEMESTER} />
                 <FormSelect name="module" label="Modul" options={modules} />
 
                 {filteredLectures.length ? (
-                  <FormSelect name={"lv_title"} label="LV-Titel auswählen" options={filteredLectures} />
+                  <FormSelect
+                    name={"lv_title"}
+                    label="LV-Titel auswählen"
+                    defaultValue={filteredLectures.length === 1 ? filteredLectures[0].value : ""}
+                    options={filteredLectures}
+                  />
                 ) : (
                   <FormInput
                     name={"lv_title"}
                     label="LV-Titel auswählen"
-                    helperText={<i>Bitte Titel der Veranstaltng eingeben</i>}
+                    helperText={<i>Bitte Titel der Veranstaltung eingeben</i>}
                   />
                 )}
 
@@ -108,15 +110,41 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   label="LV-Rhythmus"
                   onChange={(e) => {
                     if (e.target.value === "Blockveranstaltung") {
-                      values.mitbk = true;
+                      setBkDisabled(false);
                       setSerienDisabled(true);
+                    } else if (e.target.value === "wöchentlich mit Zusatzterminen") {
+                      setBkDisabled(false);
+                      setSerienDisabled(false);
                     } else {
-                      values.mitbk = false;
+                      setBkDisabled(true);
                       setSerienDisabled(false);
                     }
+
+                    if (
+                      e.target.value === "wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine" ||
+                      e.target.value === "vierzehntägig, dafür LV mit doppelter SWS-Zahl"
+                    ) {
+                      setRhythmusInfo(true);
+                    } else {
+                      setRhythmusInfo(false);
+                    }
+
                     handleChange(e);
                   }}
-                  options={lvRHYTHMUS}
+                  options={LV_RHYTHMUS}
+                  helperText={
+                    rhythmusInfo ? (
+                      <>
+                        <ErrorOutline sx={{ fontSize: "small", mr: 0.5 }} />
+                        <i>
+                          <strong>Nur nach Absprache</strong>, für mehr Informationen klicken Sie bitte auf{" "}
+                          <strong>Hinweise</strong>
+                        </i>
+                      </>
+                    ) : (
+                      ""
+                    )
+                  }
                 />
 
                 <FormInput
@@ -124,7 +152,9 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   label="Co-Dozent:innen"
                   helperText={<i>Eingabenformat: Vorname, Nachname & Vorname, Nachname...</i>}
                 />
-                <Box>
+
+                {/* TODO DROPDOWN FOR HYBRID HIER */}
+                {/* <Box>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -137,7 +167,13 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                     }
                     label="mit Blockkurs"
                   />
-                </Box>
+                </Box> */}
+                <FormSelect
+                  name={"vformat"}
+                  label="Virtulles Format"
+                  options={VIRTUELLES_FORMAT}
+                  onChange={handleChange}
+                />
               </Box>
 
               <Box
@@ -169,10 +205,11 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                       "& > div": { gridColumn: isNonMobile ? undefined : "span 2" },
                     }}
                   >
-                    <FormSelect disabled={serienDisabled} label="Wochentag" name="wochentag" options={weekday} />
+                    <FormSelect disabled={serienDisabled} label="Wochentag" name="wochentag" options={WEEKDAY} />
                     <FormDatePicker name="firstdate" label="1.Tag (Opt.)" disabled={serienDisabled} />
-                    <FormTimePicker name="von" label="Von" disabled={serienDisabled} />
-                    <FormTimePicker name="bis" label="Bis" disabled={serienDisabled} />
+
+                    <FormSelect name="von" label="Von" disabled={serienDisabled} options={TIME_PICKER_VON} />
+                    <FormSelect name="bis" label="Bis" disabled={serienDisabled} options={TIME_PICKER_BIS} />
                   </Box>
                 </Box>
 
@@ -180,12 +217,12 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   component={"fieldset"}
                   sx={{
                     border: "1px solid",
-                    borderColor: values.mitbk ? redAccent[400] : "gray",
+                    borderColor: bkDisabled ? "gray" : redAccent[400],
                   }}
                 >
                   <legend>
-                    <Typography variant="h5" color={values.mitbk === false ? "gray" : "primary"}>
-                      <strong> Blockkurs</strong>
+                    <Typography variant="h5" color={bkDisabled ? "gray" : "primary"}>
+                      <strong> Blocktermine </strong>
                     </Typography>
                   </legend>
                   <Box
@@ -196,15 +233,15 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                       "& > div": { gridColumn: isNonMobile ? undefined : "span 3" },
                     }}
                   >
-                    <FormInput name="bktemp.bktitle" label="Titel/Gruppe (Opt.)" span={2} disabled={!values.mitbk} />
-                    <FormDateRangePicker name="bktemp.datum" size="small" disabled={!values.mitbk} />
-
-                    <FormTimePicker name="bktemp.von" label="Von" disabled={!values.mitbk} />
-                    <FormTimePicker name="bktemp.bis" label="Bis" disabled={!values.mitbk} />
+                    <FormInput name="bktemp.bktitle" label="Titel/Gruppe (Opt.)" span={2} disabled={bkDisabled} />
+                    {/* <FormDateRangePicker name="bktemp.datum" size="small" disabled={bkDisabled} /> */}
+                    <FormDatePicker name="bktemp.datum" label="Datum" disabled={bkDisabled} />
+                    <FormSelect name="bktemp.von" label="Von" disabled={bkDisabled} options={TIME_PICKER_VON} />
+                    <FormSelect name="bktemp.bis" label="Bis" disabled={bkDisabled} options={TIME_PICKER_BIS} />
 
                     <Box>
                       <IconButton
-                        disabled={!values.mitbk}
+                        disabled={bkDisabled}
                         sx={{
                           backgroundColor: "primary.main",
                           color: "white",
@@ -220,7 +257,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                             datum: values.bktemp.datum,
                           };
                           setFieldValue("bk", [...values.bk, addData]);
-                          setFieldValue("bktemp.datum", "");
+                          console.log("bkTemp", values.bk);
                         }}
                       >
                         <Add />
@@ -253,12 +290,10 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                               <TableRow key={index}>
                                 <TableCell>{bk.bktitle}</TableCell>
                                 <TableCell>
-                                  {bk.datum && bk.datum.length > 0
-                                    ? bk.datum
-                                        .map((date) =>
-                                          moment(date).isValid() ? moment(date).format("DD.MM.YYYY") : "Invalid Date"
-                                        )
-                                        .join(", ")
+                                  {bk.datum
+                                    ? dayjs(bk.datum).isValid()
+                                      ? dayjs(bk.datum).format("DD.MM.YYYY")
+                                      : "Invalid Date"
                                     : "Keine Datum"}
                                 </TableCell>
                                 <TableCell>{bk.bkvon}</TableCell>
@@ -281,7 +316,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                           ) : (
                             <TableRow>
                               <TableCell colSpan={5} align="center">
-                                <strong>Blockkursübersicht</strong>
+                                <strong>Übersicht</strong>
                               </TableCell>
                             </TableRow>
                           )}
@@ -291,14 +326,44 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   </Box>
                 </Box>
 
-                <FormInput name="tn_zahl" label="Maximale TN-Zahl" />
-                <FormInput name="wartelist" label="Länge der Warteliste" />
-                <FormInput name="raumwunsch" label="Raumwunsch" />
-                <FormInput name="anmerkungen" label="Anmerkungen" />
+                <Box
+                  component={"fieldset"}
+                  sx={{
+                    border: "1px solid",
+                    borderColor: redAccent[400],
+                    gridColumn: "span 2",
+                  }}
+                >
+                  <legend>
+                    <Typography variant="h5" color={"primary"}>
+                      <strong> Allgemeine Eigenschaften (Opt. für alle Termine) </strong>
+                    </Typography>
+                  </legend>
+                  <Box
+                    display="grid"
+                    gap={1.5}
+                    gridTemplateColumns="repeat(2, minmax(0, 1fr))"
+                    sx={{
+                      "& > div": { gridColumn: isNonMobile ? undefined : "span 2" },
+                    }}
+                  >
+                    <FormInput name="tn_zahl" label="Bevorzugte maximale TN-Zahl" />
+                    <FormInput name="wartelist" label="Länge der Warteliste" />
+                    <FormInput name="raumwunsch" label="Raumwunsch" />
+                    <FormInput name="anmerkungen" label="Anmerkungen" />
+                  </Box>
+                </Box>
                 <Button type="submit" color="primary" variant="contained">
-                  Termin Addieren
+                  Termin Hinzufügen
                 </Button>
-                <Button type="reset" color="primary" variant="outlined">
+                <Button
+                  type="reset"
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => {
+                    handleReset(), setSerienDisabled(true), setBkDisabled(true);
+                  }}
+                >
                   Zurücksetzen
                 </Button>
               </Box>
