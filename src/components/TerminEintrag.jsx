@@ -168,7 +168,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                 </Box> */}
                 <FormSelect
                   name={"vformat"}
-                  label="Virtulles Format"
+                  label="Virtuelles Format"
                   options={VIRTUELLES_FORMAT}
                   onChange={handleChange}
                 />

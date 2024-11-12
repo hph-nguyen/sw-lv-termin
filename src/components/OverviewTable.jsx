@@ -138,7 +138,7 @@ export default function OverviewTable({ rowsData }) {
     { field: "anmerkungen", headerName: "Anmerkung", editable: true, type: "string", flex: 0.5 },
     {
       field: "vformat",
-      headerName: "Virtulles Format",
+      headerName: "Virtuelles Format",
       editable: true,
       type: "string",
       flex: 0.5,
