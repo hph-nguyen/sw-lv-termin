@@ -174,9 +174,6 @@ export default function OverviewTable({ rowsData }) {
         if (isInEditMode) {
           return [
             <GridActionsCellItem
-              localeText={{
-                toolbarExport: "Export",
-              }}
               icon={<SaveIcon />}
               label="Save"
               sx={{
