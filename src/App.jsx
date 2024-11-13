@@ -130,7 +130,7 @@ function App() {
         lv_title: data.lv_title,
         bktitle: data.bktitle,
         rhythmus: data.datum ? "Blockveranstaltung" : data.rhythmus,
-        vformat: data.vformat,
+        vformat: data.vformat.toString(),
         lv_termin:
           data.datum && dayjs(data.datum).isValid()
             ? `${dayjs(data.datum).format("DD.MM.YYYY")}, ${data.von}-${data.bis}`

@@ -250,7 +250,8 @@ export const TIME_PICKER_BIS = [
 ];
 
 export const VIRTUELLES_FORMAT = [
+  { value: "Präsenz", label: "Präsenz" },
   { value: "Hybrid (synchron)", label: "Hybrid (synchron)" },
   { value: "Hybrid (asynchron)", label: "Hybrid (asynchron)" },
-  { value: "Rein digital", label: "Rein digital" },
+  { value: "Reine Onlineveranstaltung", label: "Reine Onlineveranstaltung" },
 ];

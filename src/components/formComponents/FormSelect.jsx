@@ -2,7 +2,16 @@ import { TextField, MenuItem, Typography } from "@mui/material";
 import { useField, useFormikContext } from "formik";
 import { useEffect } from "react";
 
-const SelectWrapper = ({ name, options, size = "small", defaultValue, helperText, onChange, ...otherProps }) => {
+const SelectWrapper = ({
+  name,
+  options,
+  size = "small",
+  defaultValue,
+  helperText,
+  multiple = false,
+  onChange,
+  ...otherProps
+}) => {
   const { setFieldValue } = useFormikContext();
   const [field, meta] = useField(name);
 
@@ -30,6 +39,11 @@ const SelectWrapper = ({ name, options, size = "small", defaultValue, helperText
     ),
     // defaultValue: defaultValue,
     onChange: onChange || handleChange,
+    slotProps: {
+      select: {
+        multiple: multiple,
+      },
+    },
   };
 
   if (meta && meta.touched && meta.error) {

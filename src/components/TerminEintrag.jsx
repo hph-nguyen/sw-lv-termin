@@ -34,7 +34,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
     lv_title: "",
     co_dozent: "",
     rhythmus: "",
-    vformat: "",
+    vformat: ["Präsenz"],
     anmerkungen: "",
     tn_zahl: "",
     wartelist: "",
@@ -165,8 +165,6 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   label="Co-Dozent:innen"
                   helperText={"Eingabenformat: Vorname, Nachname & Vorname, Nachname..."}
                 />
-
-                {/* TODO DROPDOWN FOR HYBRID HIER */}
                 {/* <Box>
                   <FormControlLabel
                     control={
@@ -186,6 +184,8 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   label="Virtuelles Format"
                   options={VIRTUELLES_FORMAT}
                   onChange={handleChange}
+                  multiple={true}
+                  helperText={"Mehrfach wählbar"}
                 />
               </Box>
 
@@ -270,7 +270,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                             datum: values.bktemp.datum,
                           };
                           setFieldValue("bk", [...values.bk, addData]);
-                          console.log("bkTemp", values.bk);
+                          // console.log("bkTemp", values.bk);
                         }}
                       >
                         <Add />
