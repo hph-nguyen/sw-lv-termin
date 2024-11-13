@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import {
   Box,
   Button,
@@ -14,7 +13,7 @@ import {
   // FormControlLabel,
   // Checkbox,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Formik } from "formik";
 import { Add, Delete, ErrorOutline } from "@mui/icons-material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -54,6 +53,18 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
     },
   };
 
+  const resetFormRef = useRef(null);
+  const resetAll = () => {
+    if (resetFormRef.current) resetFormRef.current();
+    setSerienDisabled(true);
+    setBkDisabled(true);
+    setRhythmusInfo(false);
+  };
+
+  const [serienDisabled, setSerienDisabled] = useState(true);
+  const [bkDisabled, setBkDisabled] = useState(true);
+  const [rhythmusInfo, setRhythmusInfo] = useState(false);
+
   const checkoutSchema = yup.object().shape({
     semester: yup.string().required("Bitte auswählen"),
     module: yup.string().required("Bitte auswählen"),
@@ -67,16 +78,19 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
 
   return (
     <Box m={"10px"}>
-      <Formik onSubmit={onSubmit} initialValues={initialValues} validationSchema={checkoutSchema}>
+      <Formik
+        onSubmit={(values, actions) => {
+          onSubmit(values, actions);
+          resetAll();
+        }}
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}
+      >
         {({ values, handleSubmit, handleReset, handleChange, setFieldValue }) => {
           let filteredLectures = moduleList.find((el) => el.module === values.module)?.lectures || [];
           filteredLectures = filteredLectures.map((e) => {
             return { value: e, label: e };
           });
-
-          const [serienDisabled, setSerienDisabled] = useState(true);
-          const [bkDisabled, setBkDisabled] = useState(true);
-          const [rhythmusInfo, setRhythmusInfo] = useState(false);
 
           return (
             <form onSubmit={handleSubmit} onReset={handleReset}>
@@ -360,7 +374,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   color="primary"
                   variant="outlined"
                   onClick={() => {
-                    handleReset(), setSerienDisabled(true), setBkDisabled(true);
+                    handleReset(), resetAll();
                   }}
                 >
                   Zurücksetzen
