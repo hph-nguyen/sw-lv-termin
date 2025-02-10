@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import "./App.css";
+// eslint-disable-next-line no-unused-vars
 import { useState, useEffect } from "react";
-import { Box, TextField, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, TextField, IconButton, Tooltip, Button, MenuItem } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Card from "./components/shared/Card";
@@ -16,46 +18,77 @@ import InfoModal from "./components/AlleInfoModal";
 import dayjs from "dayjs";
 import AllgemeineInfo from "./components/AllgemeineInfo";
 import { InfoOutlined } from "@mui/icons-material";
+import { useAuth } from "./components/hooks/useAuth";
+import ConfirmDialog from "./components/shared/ConfirmDialog";
+import GebuchtTermine from "./components/GebuchtTermine";
+import * as apiService from "../src/services/apiService";
+import { dauerBerechnung, formatTimeRange, numberToWeekday } from "./services/timeUtils";
+import { useNavigate } from "react-router-dom";
 
 function App() {
+  const { login } = useAuth();
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const [user, setUser] = useState({
-    vorname: sessionStorage.getItem("vorname") || "",
-    nachname: sessionStorage.getItem("nachname") || "",
-    mail: sessionStorage.getItem("mail") || "",
-  });
+  // eslint-disable-next-line no-unused-vars
+  const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user")));
   const [tableData, setTableData] = useState(
     sessionStorage.getItem("tableData") ? JSON.parse(sessionStorage.getItem("tableData")) : []
   );
-
+  const [currentSemester, setCurrentSemester] = useState(sessionStorage.getItem("currentSemester"));
   const [openInfo, setOpenInfo] = useState(false);
+  const [semesterChangeWarn, setSemesterChangeWarn] = useState(false);
+  const [userChangeWarn, setUserChangeWarn] = useState(false);
+  const [failToPostTermin, setFailToPostTermin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [gebuchteTermine, setGebuchteTermine] = useState([]);
+  const [modulLvMergeList, setModulLvMergeList] = useState([]);
+  const [lvListe, setLvListe] = useState([]);
+  const navigate = useNavigate();
 
-  const convertSpecialCharacters = (name) => {
-    return name
-      .replace(/Ö/g, "oe")
-      .replace(/Ä/g, "ae")
-      .replace(/Ü/g, "ue")
-      .replace(/ö/g, "oe")
-      .replace(/ä/g, "ae")
-      .replace(/ü/g, "ue");
+  const handleUserChange = () => {
+    setUserChangeWarn(true);
   };
 
-  const autoMailGenerate = (name, vorname) => {
-    // const firstTwo = convertSpecialCharacters(vorname.substring(0, 2).trim().toLowerCase());
-    return `${convertSpecialCharacters(vorname.trim().toLowerCase())}.${name.trim().toLowerCase()}@th-nuernberg.de`;
+  const handlePostNewTerminList = async () => {
+    const sendData = prepareDataForSendTermine(
+      sessionStorage.getItem("terminList") ? JSON.parse(sessionStorage.getItem("terminList")) : null
+    );
+    if (sendData) {
+      const result = await apiService.postNewTerminListe(currentSemester, sendData);
+      if (result.status === 200) {
+        const infoData = sendData.map((data) => {
+          return {
+            semester: sessionStorage.getItem("currentSemester"),
+            module: `${data.modul_id} ${data.modul_titel}`,
+            lv_titel: data.lv_titel ? data.lv_titel : data.lv_frei_titel,
+            block_titel: data.block_titel,
+            rhythmus: data.rhythmus,
+            lv_termin: `${data.wochentag ? numberToWeekday(data.wochentag) : data.start_datum}, ${formatTimeRange(
+              data.anfangszeit,
+              data.dauer
+            )} `,
+            vformat: data.vformat,
+          };
+        });
+        navigate("/sw-lv-termin/info", { state: { data: infoData } });
+        sessionStorage.removeItem("terminList");
+        sessionStorage.removeItem("tableData");
+      } else {
+        console.log(result);
+        setFailToPostTermin(true);
+      }
+    }
   };
 
-  const handleNameChange = (event) => {
-    const { name, value } = event.target;
-    setUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+  const handleChangeGebuchteTermin = () => {};
+
+  const handleSemesterChange = (e) => {
+    setSemesterChangeWarn(true);
+    sessionStorage.setItem("currentSemester", e.target.value);
+    setCurrentSemester(e);
   };
 
   const handleTerminEintrag = (values, actions) => {
     // console.log(values);
-    // eslint-disable-next-line
     const { bk, bktemp, ...rest } = values;
 
     let newTerminList = [];
@@ -63,46 +96,26 @@ function App() {
     if (rest.wochentag !== "") {
       serienTermin = {
         id: randomId(),
-        nachname: sessionStorage.getItem("nachname"),
-        vorname: sessionStorage.getItem("vorname"),
+        benutzer_id: user.benutzer_id,
         datum: "",
-        bktitle: "",
+        block_titel: "",
         ...rest,
       };
       newTerminList.push(serienTermin);
     }
 
     let bkTermin = [];
-    // if (bk.length > 0) {
-    //   for (let i = 0; i < bk.length; i++) {
-    //     let dates = bk[i].datum.map((date) => moment(date).format());
-    //     let temp = dates.map((date) => ({
-    //       id: randomId(),
-    //       nachname: sessionStorage.getItem("nachname"),
-    //       vorname: sessionStorage.getItem("vorname"),
-    //       datum: moment(date).format("YYYY-MM-DD"),
-    //       ...rest,
-    //       firstdate: "",
-    //       von: bk[i].bkvon,
-    //       bis: bk[i].bkbis,
-    //       bktitle: bk[i].bktitle,
-    //       wochentag: "-",
-    //     }));
-    //     bkTermin.push(...temp);
-    //   }
-    // }
     if (bk.length > 0) {
       bkTermin = bk.map((e) => {
         return {
           id: randomId(),
-          nachname: sessionStorage.getItem("nachname"),
-          vorname: sessionStorage.getItem("vorname"),
+          benutzer_id: user.benutzer_id,
           datum: moment(e.datum).format("YYYY-MM-DD"),
           ...rest,
-          firstdate: "",
+          start_datum: "",
           von: e.bkvon,
           bis: e.bkbis,
-          bktitle: e.bktitle,
+          block_titel: e.block_titel,
           wochentag: "-",
         };
       });
@@ -123,23 +136,20 @@ function App() {
     const tableData = newTerminList.map((data) => {
       return {
         id: data.id,
-        nachname: sessionStorage.getItem("nachname"),
-        vorname: sessionStorage.getItem("vorname"),
-        semester: data.semester,
-        module: data.module,
-        lv_title: data.lv_title,
-        bktitle: data.bktitle,
-        rhythmus: data.datum ? "Blockveranstaltung" : data.rhythmus,
+        module: `${data.modul_id} ${data.modul_titel}`,
+        lv_titel: data.lv_titel,
+        block_titel: data.block_titel,
+        rhythmus: data.rhythmus === "WZ" ? "W" : data.rhythmus,
         vformat: data.vformat.toString(),
         lv_termin:
           data.datum && dayjs(data.datum).isValid()
             ? `${dayjs(data.datum).format("DD.MM.YYYY")}, ${data.von}-${data.bis}`
             : `${weekday[data.wochentag]}, ${data.von}-${data.bis}`,
-        firstdate: dayjs(data.firstdate).isValid() ? dayjs(data.firstdate).format("DD.MM.YYYY") : "",
-        raumwunsch: data.raumwunsch,
+        start_datum: dayjs(data.start_datum).isValid() ? dayjs(data.start_datum).format("DD.MM.YYYY") : "",
+        raum_wunsch: data.raum_wunsch,
         co_dozent: data.co_dozent,
-        tn_zahl: data.tn_zahl,
-        wartelist: data.wartelist,
+        max_tn: data.max_tn,
+        warteliste_len: data.warteliste_len,
         anmerkung: data.anmerkung,
         rawData: { ...data },
       };
@@ -151,14 +161,130 @@ function App() {
     actions.resetForm();
   };
 
+  const getGebuchteTermine = async () => {
+    try {
+      setLoading(true); // Indicate data is being fetched
+      const res = await apiService.getGebuchteTermine(currentSemester, user.benutzer_id);
+      if (Array.isArray(res.data)) {
+        const terminList = res.data.map((el) => ({
+          id: el.id,
+          module: el.modul_titel,
+          lv_titel: el.lv_titel ? el.lv_titel : el.lv_frei_titel,
+          block_titel: el.block_titel,
+          rhythmus: el.rhythmus,
+          vformat: el.vformat,
+          lv_termin: el.wochentag
+            ? `${numberToWeekday(el.wochentag)},  ${formatTimeRange(el.anfangszeit, el.dauer)}`
+            : `${el.start_datum},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
+          start_datum: el.wochentag ? el.start_datum : "",
+          raum_wunsch: el.raum_wunsch,
+          co_dozent: el.co_dozent,
+          max_tn: el.max_tn,
+          warteliste_len: el.warteliste_len,
+          status: el.status,
+          rawData: { ...el },
+        }));
+        // console.log(dayjs("10:00", "HH:mm"));
+        setGebuchteTermine([...terminList]);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getModulListe = async () => {
+    try {
+      const res = await apiService.getModulListe(currentSemester);
+      // console.log(res.data);
+      return res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getLvListe = async () => {
+    try {
+      const res = await apiService.getLvListe(currentSemester);
+      setLvListe(res.data);
+      return res.data;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const findLvIdByName = (name) => {
+    if (lvListe) {
+      const foundItem = lvListe.find((item) => item.name === name);
+      return foundItem ? foundItem.id : "";
+    }
+    return "";
+  };
+
+  const prepareDataForSendTermine = (terminList = []) => {
+    // const terminList = sessionStorage.getItem("terminList") ? JSON.parse(sessionStorage.getItem("terminList")) : null;
+    let sendData = [];
+    if (terminList) {
+      sendData = terminList.map(({ id, von, bis, ...rest }) => {
+        const lv_id = findLvIdByName(rest.lv_titel);
+        return {
+          ...rest,
+          vformat: Array.isArray(rest.vformat) ? rest.vformat.toString() : rest.vformat || "",
+          lv_id: lv_id,
+          lv_titel: lv_id ? rest.lv_titel : "",
+          lv_frei_titel: lv_id ? "" : rest.lv_titel,
+          anfangszeit: von,
+          datum: rest.wochentag ? rest.start_datum : rest.datum,
+          rhythmus: rest.rhythmus === "WZ" ? "W" : rest.rhythmus,
+          dauer: dauerBerechnung(von, bis),
+          dozent: `${user.vorname}, ${user.name}`,
+        };
+      });
+      return sendData;
+    }
+    // console.log(sendData);
+    return null;
+  };
+
+  const getMergedLvList = async () => {
+    try {
+      const modules = await getModulListe();
+      const lectures = await getLvListe();
+      const moduleMap = {};
+
+      for (const module of modules) {
+        moduleMap[module.modul_id] = {
+          modul_id: module.modul_id,
+          modul_titel: module.name,
+          lectures: [],
+        };
+      }
+
+      for (const lecture of lectures) {
+        if (moduleMap[lecture.modul_id]) {
+          moduleMap[lecture.modul_id].lectures.push(lecture.name);
+        }
+      }
+
+      return Object.values(moduleMap);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    const updatedMail = autoMailGenerate(user.nachname, user.vorname);
-    setUser((prevUser) => ({ ...prevUser, mail: updatedMail }));
-    sessionStorage.setItem("vorname", user.vorname);
-    sessionStorage.setItem("nachname", user.nachname);
-    sessionStorage.setItem("mail", updatedMail);
+    if (currentSemester && user?.benutzer_id) {
+      getGebuchteTermine();
+      const fetchModulLvMergeList = async () => {
+        const data = await getMergedLvList();
+        setModulLvMergeList(data);
+      };
+      fetchModulLvMergeList();
+    }
     // eslint-disable-next-line
-  }, [user.vorname, user.nachname]);
+  }, [currentSemester, user?.benutzer_id]);
 
   return (
     <>
@@ -177,9 +303,9 @@ function App() {
             <Box
               display="grid"
               gap={1.5}
-              gridTemplateColumns="repeat(3, minmax(0, 1fr))"
+              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
               sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 3" },
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
               <TextField
@@ -189,36 +315,42 @@ function App() {
                 sx={{ gridColumn: "span 1" }}
                 value={user.vorname}
                 name="vorname"
-                onChange={handleNameChange}
+                disabled
+                // onChange={handleNameChange}
               />
               <TextField
                 placeholder="Nachname"
                 label="Nachname"
                 size="small"
                 sx={{ gridColumn: "span 1" }}
-                value={user.nachname}
-                name="nachname"
-                onChange={handleNameChange}
-              />
-              <TextField
-                placeholder="TH-Email"
-                label="TH-Email"
-                size="small"
-                sx={{ gridColumn: "span 1" }}
+                value={user.name}
+                name="name"
                 disabled
-                value={user.mail}
-                helperText={
-                  <Typography variant="h7">
-                    <i>
-                      <strong>Email wird automatisch generiert. Bitte überprüfen</strong>
-                    </i>
-                  </Typography>
-                }
+                // onChange={handleNameChange}
               />
 
-              <Box sx={{ gridColumn: "span 3" }}>
+              <TextField
+                select
+                label="Semester"
+                defaultValue={sessionStorage.getItem("currentSemester")}
+                size="small"
+                onChange={handleSemesterChange}
+              >
+                {user.semesterliste.split(",").map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <Button variant="contained" onClick={handleUserChange}>
+                Benutzer Wechseln
+              </Button>
+
+              <Box sx={{ gridColumn: "span 4" }}>
                 <AllgemeineInfo />
               </Box>
+              <Box sx={{ gridColumn: "span 4" }}>{loading ? "" : <GebuchtTermine rowsData={gebuchteTermine} />}</Box>
             </Box>
           </Card>
 
@@ -235,7 +367,7 @@ function App() {
               </Tooltip>
             }
           >
-            <TerminEintrag moduleList={LV_LIST} onSubmit={handleTerminEintrag} />
+            <TerminEintrag moduleList={modulLvMergeList} onSubmit={handleTerminEintrag} />
           </Card>
 
           {/* OVERVIEW TABLE */}
@@ -261,12 +393,53 @@ function App() {
               </Tooltip>
             }
           >
-            <OverviewTable rowsData={tableData} />
+            <OverviewTable rowsData={tableData} handleSend={handlePostNewTerminList} />
           </Card>
         </Box>
       </Box>
 
       <MUIDialog onOpen={openInfo} title={"Hinweise"} onClose={() => setOpenInfo(false)} content={<InfoModal />} />
+      <MUIDialog
+        onOpen={semesterChangeWarn}
+        onClose={() => setOpenInfo(false)}
+        content={
+          <ConfirmDialog
+            msg={
+              "Sind Sie sicher, dass Sie den Semester wechseln möchten? Alle in der aktuellen Sitzung nicht gespeicherten Daten werden gelöscht!"
+            }
+            onConfirm={() => setSemesterChangeWarn(false)}
+            onDecline={() => setSemesterChangeWarn(false)}
+          />
+        }
+      />
+      <MUIDialog
+        onOpen={userChangeWarn}
+        onClose={() => setUserChangeWarn(false)}
+        content={
+          <ConfirmDialog
+            msg={
+              "Sind Sie sicher, dass Sie den Benutzer wechseln möchten? Alle in der aktuellen Sitzung nicht gespeicherten Daten werden gelöscht!"
+            }
+            onConfirm={() => {
+              sessionStorage.clear();
+              login(null);
+              setUserChangeWarn(false);
+            }}
+            onDecline={() => setUserChangeWarn(false)}
+          />
+        }
+      />
+      <MUIDialog
+        onOpen={failToPostTermin}
+        onClose={() => setFailToPostTermin(false)}
+        content={
+          <ConfirmDialog
+            msg={"Etwas ist schiefgelaufen, Ihre Termine können nicht gebucht werden"}
+            hideButton={true}
+            type="error"
+          />
+        }
+      />
     </>
   );
 }

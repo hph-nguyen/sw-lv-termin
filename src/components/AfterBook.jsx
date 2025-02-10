@@ -49,8 +49,11 @@ export const AfterBook = () => {
               </Typography>
             )}
           </Box>
-          <Link to="/sw-lv-termin">
-            <Button variant="contained">Zurück</Button>
+          <Link to="/">
+            <Button variant="contained" sx={{ marginRight: 1 }}>
+              Zurück
+            </Button>
+            <Button variant="contained">Ausloggen</Button>
           </Link>
         </Box>
       </Box>

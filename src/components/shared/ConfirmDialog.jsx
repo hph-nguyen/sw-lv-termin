@@ -11,6 +11,7 @@ const ConfirmDialog = ({
   onConfirm,
   onDecline,
   type = "info",
+  hideButton = false,
 }) => {
   return (
     <>
@@ -54,12 +55,16 @@ const ConfirmDialog = ({
           {msg}
         </Box>
         {subMsg && <Box sx={{ fontWeight: 600, gridColumn: "span 2", mb: "10px" }}>{subMsg}</Box>}
-        <Button color="info" variant="contained" onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
-        <Button color="error" variant="contained" onClick={onDecline}>
-          {declineLabel}
-        </Button>
+        {!hideButton && (
+          <>
+            <Button color="info" variant="contained" onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
+            <Button color="error" variant="contained" onClick={onDecline}>
+              {declineLabel}
+            </Button>
+          </>
+        )}
       </Box>
     </>
   );

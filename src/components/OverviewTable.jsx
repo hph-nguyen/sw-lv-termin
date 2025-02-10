@@ -10,35 +10,21 @@ import { deDE } from "@mui/x-data-grid/locales";
 
 import { redAccent } from "../theme";
 // import moment from "moment";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+// import dayjs from "dayjs";
+// import { useNavigate } from "react-router-dom";
 
-export default function OverviewTable({ rowsData }) {
+export default function OverviewTable({ rowsData, handleSend }) {
   const [rows, setRows] = useState(rowsData);
   const [rowModesModel, setRowModesModel] = useState({});
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     setRows(rowsData);
   }, [rowsData]);
 
-  const handleSend = () => {
-    const infoData = rowsData.map((data) => {
-      return {
-        semester: data.semester,
-        module: data.module,
-        lv_title: data.lv_title,
-        bktitle: data.bktitle,
-        rhythmus: data.rhythmus,
-        lv_termin: data.lv_termin,
-        vformat: data.vformat,
-      };
-    });
-
-    navigate("/sw-lv-termin/info", { state: { data: infoData } });
-    sessionStorage.clear();
+  const handleSendData = () => {
+    handleSend();
   };
-
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
@@ -84,33 +70,30 @@ export default function OverviewTable({ rowsData }) {
     // console.log(rows);
     sessionStorage.setItem("tableData", JSON.stringify(rows));
     const newTerminList = rows.map((e) => {
-      // console.log(dayjs(e.firstdate).isValid());
+      // console.log(e.start_datum);
       return {
         ...e.rawData,
-        firstdate: dayjs(e.firstdate).isValid() ? dayjs(e.firstdate).format("YYYY-MM-DD") : "invalid",
-        raumwunsch: e.raumwunsch,
+        start_datum: e.start_datum,
+        raum_wunsch: e.raum_wunsch,
         co_dozent: e.co_dozent,
-        tn_zahl: e.tn_zahl,
-        wartelist: e.wartelist,
+        max_tn: e.max_tn,
+        warteliste_len: e.warteliste_len,
         anmerkungen: e.anmerkungen,
         vformat: e.vformat,
-        bktitle: e.bktitle,
+        block_titel: e.block_titel,
       };
     });
     sessionStorage.setItem("terminList", JSON.stringify(newTerminList));
   };
 
   const columns = [
-    { field: "nachname", headerName: "Nachname", editable: false, type: "string", flex: 0.5 },
-    { field: "vorname", headerName: "Vorname", editable: false, type: "string", flex: 0.5 },
-    { field: "semester", headerName: "Semester", editable: false, type: "string", flex: 0.5 },
     { field: "module", headerName: "Modul", editable: false, type: "string", flex: 1 },
-    { field: "lv_title", headerName: "LV-Titel", editable: false, type: "string", flex: 1 },
-    { field: "bktitle", headerName: "BK-Titel (Opt.)", editable: true, type: "string", flex: 1 },
+    { field: "lv_titel", headerName: "LV-Titel", editable: false, type: "string", flex: 1 },
+    { field: "block_titel", headerName: "BK-Titel (Opt.)", editable: true, type: "string", flex: 1 },
     { field: "rhythmus", headerName: "Rhythmus", editable: false, type: "string", flex: 1 },
     { field: "lv_termin", headerName: "LV-Termin", editable: false, type: "string", flex: 1 },
     {
-      field: "firstdate",
+      field: "start_datum",
       headerName: "1. Tag",
       editable: true,
       type: "string",
@@ -131,10 +114,10 @@ export default function OverviewTable({ rowsData }) {
         />
       ),
     },
-    { field: "raumwunsch", headerName: "Raumwunsch", editable: true, type: "string", flex: 0.5 },
+    { field: "raum_wunsch", headerName: "Raumwunsch", editable: true, type: "string", flex: 0.5 },
     { field: "co_dozent", headerName: "Co-Dozent", editable: true, type: "string", flex: 0.5 },
-    { field: "tn_zahl", headerName: "max. TN-Zahl", editable: true, type: "number", flex: 0.5 },
-    { field: "wartelist", headerName: "Wartelist", editable: true, type: "string", flex: 0.5 },
+    { field: "max_tn", headerName: "max. TN-Zahl", editable: true, type: "number", flex: 0.5 },
+    { field: "warteliste_len", headerName: "Wartelist", editable: true, type: "string", flex: 0.5 },
     { field: "anmerkungen", headerName: "Anmerkung", editable: true, type: "string", flex: 0.5 },
     {
       field: "vformat",
@@ -197,9 +180,9 @@ export default function OverviewTable({ rowsData }) {
             label="Edit"
             className="textPrimary"
             onClick={handleEditClick(id)}
-            color="inherit"
+            color="primary"
           />,
-          <GridActionsCellItem icon={<DeleteIcon />} label="Delete" onClick={handleDeleteClick(id)} color="inherit" />,
+          <GridActionsCellItem icon={<DeleteIcon />} label="Delete" onClick={handleDeleteClick(id)} color="primary" />,
         ];
       },
     },
@@ -227,13 +210,13 @@ export default function OverviewTable({ rowsData }) {
           initialState={{
             columns: {
               columnVisibilityModel: {
-                raumwunsch: false,
+                raum_wunsch: false,
                 co_dozent: false,
-                tn_zahl: false,
-                wartelist: false,
+                max_tn: false,
+                warteliste_len: false,
                 anmerkungen: false,
                 vformat: false,
-                // firstdate: false,
+                // start_datum: false,
               },
             },
             density: "compact",
@@ -258,7 +241,7 @@ export default function OverviewTable({ rowsData }) {
         />
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Button variant="contained" onClick={handleSend}>
+        <Button variant="contained" onClick={handleSendData}>
           Buchen <SendIcon sx={{ ml: 1 }} />
         </Button>
       </Box>

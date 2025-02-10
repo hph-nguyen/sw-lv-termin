@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import * as yup from "yup";
 
 import { FormDatePicker, FormInput, FormSelect } from "../components/formComponents";
+// eslint-disable-next-line no-unused-vars
 import { LV_RHYTHMUS, TIME_PICKER_VON, TIME_PICKER_BIS, SEMESTER, WEEKDAY, VIRTUELLES_FORMAT } from "../dummyData";
 import { redAccent } from "../theme";
 
@@ -30,23 +31,25 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
 
   const initialValues = {
     semester: "",
-    module: "",
-    lv_title: "",
+    modul_id: "",
+    modul_titel: "",
+    lv_titel: "",
     co_dozent: "",
     rhythmus: "",
     vformat: ["Präsenz"],
-    anmerkungen: "",
-    tn_zahl: "",
-    wartelist: "",
-    raumwunsch: "",
+    anmerkung: "",
+    max_tn: "",
+    warteliste_len: "",
+    raum_wunsch: "",
     // mitbk: false,
-    firstdate: "",
+    start_datum: "",
     wochentag: "",
     von: "",
     bis: "",
+    status: "angefragt",
     bk: [],
     bktemp: {
-      bktitle: "",
+      block_titel: "",
       von: "",
       bis: "",
       datum: "",
@@ -66,14 +69,14 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
   const [rhythmusInfo, setRhythmusInfo] = useState(false);
 
   const checkoutSchema = yup.object().shape({
-    semester: yup.string().required("Bitte auswählen"),
-    module: yup.string().required("Bitte auswählen"),
-    lv_title: yup.string().required("Bitte auswählen/ eingeben"),
+    // semester: yup.string().required("Bitte auswählen"),
+    modul_id: yup.string().required("Bitte auswählen"),
+    lv_titel: yup.string().required("Bitte auswählen/ eingeben"),
     rhythmus: yup.string().required("Bitte auswählen"),
   });
 
   const modules = moduleList.map((e) => {
-    return { value: e.module, label: e.module };
+    return { value: e.modul_id, label: `${e.modul_id} ${e.modul_titel}`, name: e.modul_titel };
   });
 
   return (
@@ -87,7 +90,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
         validationSchema={checkoutSchema}
       >
         {({ values, handleSubmit, handleReset, handleChange, setFieldValue }) => {
-          let filteredLectures = moduleList.find((el) => el.module === values.module)?.lectures || [];
+          let filteredLectures = moduleList.find((el) => el.modul_id === values.modul_id)?.lectures || [];
           filteredLectures = filteredLectures.map((e) => {
             return { value: e, label: e };
           });
@@ -102,32 +105,47 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   "& > div": { gridColumn: isNonMobile ? undefined : "span 3" },
                 }}
               >
-                <FormSelect name="semester" label="Semester" options={SEMESTER} />
-                <FormSelect name="module" label="Modul" options={modules} />
+                {/* <FormSelect name="semester" label="Semester" options={SEMESTER} /> */}
+                <FormSelect
+                  name="modul_id"
+                  label="Modul"
+                  options={modules}
+                  onChange={(e) => {
+                    handleChange(e);
+                    const selectedModule = moduleList.find((module) => module.modul_id === e.target.value);
+                    setFieldValue("modul_titel", selectedModule ? selectedModule.modul_titel : "");
+                  }}
+                />
 
                 {filteredLectures.length ? (
                   <FormSelect
-                    name={"lv_title"}
+                    name={"lv_titel"}
                     label="LV-Titel auswählen"
-                    defaultValue={filteredLectures.length === 1 ? filteredLectures[0].value : ""}
+                    defaultValue={filteredLectures[0].value}
                     options={filteredLectures}
                   />
                 ) : (
                   <FormInput
-                    name={"lv_title"}
+                    name={"lv_titel"}
                     label="LV-Titel auswählen"
                     helperText={"Bitte Titel der Veranstaltung eingeben"}
                   />
                 )}
 
+                <FormInput
+                  name={"co_dozent"}
+                  label="Co-Dozent:innen"
+                  helperText={"Eingabenformat: Vorname, Nachname & Vorname, Nachname..."}
+                />
+
                 <FormSelect
                   name="rhythmus"
                   label="LV-Rhythmus"
                   onChange={(e) => {
-                    if (e.target.value === "Blockveranstaltung") {
+                    if (e.target.value === "BK") {
                       setBkDisabled(false);
                       setSerienDisabled(true);
-                    } else if (e.target.value === "wöchentlich mit Zusatzterminen") {
+                    } else if (e.target.value === "WZ") {
                       setBkDisabled(false);
                       setSerienDisabled(false);
                     } else {
@@ -135,10 +153,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                       setSerienDisabled(false);
                     }
 
-                    if (
-                      e.target.value === "wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine" ||
-                      e.target.value === "vierzehntägig, dafür LV mit doppelter SWS-Zahl"
-                    ) {
+                    if (e.target.value === "VZ" || e.target.value === "VZ2") {
                       setRhythmusInfo(true);
                     } else {
                       setRhythmusInfo(false);
@@ -160,11 +175,6 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   }
                 />
 
-                <FormInput
-                  name={"co_dozent"}
-                  label="Co-Dozent:innen"
-                  helperText={"Eingabenformat: Vorname, Nachname & Vorname, Nachname..."}
-                />
                 {/* <Box>
                   <FormControlLabel
                     control={
@@ -219,7 +229,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                     }}
                   >
                     <FormSelect disabled={serienDisabled} label="Wochentag" name="wochentag" options={WEEKDAY} />
-                    <FormDatePicker name="firstdate" label="1.Tag (Opt.)" disabled={serienDisabled} />
+                    <FormDatePicker name="start_datum" label="1.Tag (Opt.)" disabled={serienDisabled} />
 
                     <FormSelect name="von" label="Von" disabled={serienDisabled} options={TIME_PICKER_VON} />
                     <FormSelect name="bis" label="Bis" disabled={serienDisabled} options={TIME_PICKER_BIS} />
@@ -246,7 +256,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                       "& > div": { gridColumn: isNonMobile ? undefined : "span 3" },
                     }}
                   >
-                    <FormInput name="bktemp.bktitle" label="Titel/Gruppe (Opt.)" span={2} disabled={bkDisabled} />
+                    <FormInput name="bktemp.block_titel" label="Titel/Gruppe (Opt.)" span={2} disabled={bkDisabled} />
                     {/* <FormDateRangePicker name="bktemp.datum" size="small" disabled={bkDisabled} /> */}
                     <FormDatePicker name="bktemp.datum" label="Datum" disabled={bkDisabled} />
                     <FormSelect name="bktemp.von" label="Von" disabled={bkDisabled} options={TIME_PICKER_VON} />
@@ -264,7 +274,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                         }}
                         onClick={() => {
                           const addData = {
-                            bktitle: values.bktemp.bktitle,
+                            block_titel: values.bktemp.block_titel,
                             bkvon: values.bktemp.von,
                             bkbis: values.bktemp.bis,
                             datum: values.bktemp.datum,
@@ -301,7 +311,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                           {values.bk.length ? (
                             values.bk.map((bk, index) => (
                               <TableRow key={index}>
-                                <TableCell>{bk.bktitle}</TableCell>
+                                <TableCell>{bk.block_titel}</TableCell>
                                 <TableCell>
                                   {bk.datum
                                     ? dayjs(bk.datum).isValid()
@@ -360,10 +370,10 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                       "& > div": { gridColumn: isNonMobile ? undefined : "span 2" },
                     }}
                   >
-                    <FormInput name="tn_zahl" label="Bevorzugte maximale TN-Zahl" />
-                    <FormInput name="wartelist" label="Länge der Warteliste" />
-                    <FormInput name="raumwunsch" label="Raumwunsch" />
-                    <FormInput name="anmerkungen" label="Anmerkungen" />
+                    <FormInput name="max_tn" label="Bevorzugte maximale TN-Zahl" />
+                    <FormInput name="warteliste_len" label="Länge der Warteliste" />
+                    <FormInput name="raum_wunsch" label="Raumwunsch" />
+                    <FormInput name="anmerkung" label="Anmerkungen" />
                   </Box>
                 </Box>
                 <Button type="submit" color="primary" variant="contained">

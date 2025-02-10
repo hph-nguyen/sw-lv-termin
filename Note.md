@@ -1,3 +1,5 @@
+# Dev Note
+
 ## Example Data Structure
 
 ```json
@@ -21,5 +23,15 @@
     { "id": 1, "title": "1.Gruppe", "von": "10:00", "bis": "16:00", "datum": "2025-03-28" }, // block
     { "id": 2, "title": "1.Gruppe", "von": "10:00", "bis": "14:00", "datum": "2025-03-29" } // block
   ]
+}
+```
+
+### Draft for ChangeLog Event
+
+```json
+{
+  "benId": 80,
+  "msg": "Benutzer ... hat folgende Termine storniert. Benutzer ... hat folgende Termin angefragt. Benutzer ... hat folgdende Termin aktuallisiert",
+  "gelesen_von": "80, 81, 82, ..."
 }
 ```
