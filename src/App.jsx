@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import "./App.css";
-// eslint-disable-next-line no-unused-vars
 import { useState, useEffect } from "react";
 import { Box, TextField, IconButton, Tooltip, Button, MenuItem } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -10,7 +9,6 @@ import OverviewTable from "./components/OverviewTable";
 import Header from "./components/Header";
 
 import TerminEintrag from "./components/TerminEintrag";
-import { LV_LIST } from "./dummyData";
 import { randomId } from "@mui/x-data-grid-generator";
 import moment from "moment";
 import MUIDialog from "./components/shared/MUIDialog";
@@ -28,7 +26,6 @@ import { useNavigate } from "react-router-dom";
 function App() {
   const { login } = useAuth();
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  // eslint-disable-next-line no-unused-vars
   const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user")));
   const [tableData, setTableData] = useState(
     sessionStorage.getItem("tableData") ? JSON.parse(sessionStorage.getItem("tableData")) : []
@@ -88,7 +85,6 @@ function App() {
   };
 
   const handleTerminEintrag = (values, actions) => {
-    // console.log(values);
     const { bk, bktemp, ...rest } = values;
 
     let newTerminList = [];
@@ -121,7 +117,6 @@ function App() {
       });
     }
 
-    // console.log("bkTermin", bkTermin);
     newTerminList.push(...bkTermin);
 
     const oldTerminList = sessionStorage.getItem("terminList")

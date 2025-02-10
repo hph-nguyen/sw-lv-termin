@@ -1,11 +1,20 @@
 import { Box, Button, Typography } from "@mui/material";
 import Header from "./Header";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "./hooks/useAuth";
 
 export const AfterBook = () => {
   const location = useLocation();
   const data = location.state?.data;
   const isDataValidArray = Array.isArray(data) && data.length > 0;
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleAuslogen = () => {
+    sessionStorage.clear();
+    login(null);
+    navigate("/");
+  };
 
   return (
     <>
@@ -53,7 +62,9 @@ export const AfterBook = () => {
             <Button variant="contained" sx={{ marginRight: 1 }}>
               Zurück
             </Button>
-            <Button variant="contained">Ausloggen</Button>
+            <Button variant="contained" onClick={handleAuslogen}>
+              Ausloggen
+            </Button>
           </Link>
         </Box>
       </Box>

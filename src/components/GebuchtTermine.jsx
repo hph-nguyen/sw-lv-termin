@@ -15,7 +15,6 @@ import TerminChangeForm from "./TerminChangeForm";
 // import ConfirmDialog from "./shared/ConfirmDialog";
 
 const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
-  // eslint-disable-next-line
   const [rows, setRows] = useState(rowsData);
   const [openForm, setOpenForm] = useState(false);
   const [terminToEdit, setTerminToEdit] = useState({});
