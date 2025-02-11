@@ -60,7 +60,7 @@ export const postNewTerminListe = async (semester, terminListe, benutzerId) => {
 
 export const putTermin = async (semester, termin, benutzerId) => {
   try {
-    const res = await httpRequest.post(`${checkSemesterSlash(semester)}/swWunschtermine/${benutzerId}`, termin);
+    const res = await httpRequest.put(`${checkSemesterSlash(semester)}/swWunschtermine/${benutzerId}`, termin);
     return res;
   } catch (err) {
     return err;

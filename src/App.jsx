@@ -158,7 +158,7 @@ function App() {
 
   const getGebuchteTermine = async () => {
     try {
-      setLoading(true); // Indicate data is being fetched
+      setLoading(true);
       const res = await apiService.getGebuchteTermine(currentSemester, user.benutzer_id);
       if (Array.isArray(res.data)) {
         const terminList = res.data.map((el) => ({

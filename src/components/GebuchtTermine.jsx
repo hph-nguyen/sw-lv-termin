@@ -3,16 +3,15 @@ import MUIAccordion from "./shared/MUIAccordion";
 import { useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { GridToolbar, DataGrid, GridActionsCellItem, gridClasses } from "@mui/x-data-grid";
-
 import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 
 import { deDE } from "@mui/x-data-grid/locales";
 import { redAccent } from "../theme";
-// import { DUMMY_TABLE_DATA } from "../dummyData";
 import MUIDialog from "./shared/MUIDialog";
 import TerminChangeForm from "./TerminChangeForm";
+import * as apiService from "../services/apiService";
 // import ConfirmDialog from "./shared/ConfirmDialog";
+import { numberToWeekday, formatTimeRange } from "../services/timeUtils";
 
 const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
   const [rows, setRows] = useState(rowsData);
@@ -27,9 +26,49 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
     setOpenForm(true);
   };
 
-  const handleDeleteClick = (e) => () => {
-    const temp = { ...e.row.rawData, status: "storniert" };
-    console.log(temp);
+  const getGebuchteTermine = async (benutzerId) => {
+    try {
+      const res = await apiService.getGebuchteTermine(sessionStorage.getItem("currentSemester"), benutzerId);
+      if (Array.isArray(res.data)) {
+        const terminList = res.data.map((el) => ({
+          id: el.id,
+          module: el.modul_titel,
+          lv_titel: el.lv_titel ? el.lv_titel : el.lv_frei_titel,
+          block_titel: el.block_titel,
+          rhythmus: el.rhythmus,
+          vformat: el.vformat,
+          lv_termin: el.wochentag
+            ? `${numberToWeekday(el.wochentag)},  ${formatTimeRange(el.anfangszeit, el.dauer)}`
+            : `${el.start_datum},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
+          start_datum: el.wochentag ? el.start_datum : "",
+          raum_wunsch: el.raum_wunsch,
+          co_dozent: el.co_dozent,
+          max_tn: el.max_tn,
+          warteliste_len: el.warteliste_len,
+          status: el.status,
+          rawData: { ...el },
+        }));
+        // console.log(dayjs("10:00", "HH:mm"));
+        setRows([...terminList]);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleCancelClick = (e) => async () => {
+    if (window.confirm("Sind sie sicher, diese Buchung zu stornieren?")) {
+      const temp = { ...e.row.rawData, status: "storniert" };
+      const benutzerId = JSON.parse(sessionStorage.getItem("user")).benutzer_id;
+      if (benutzerId) {
+        const res = await apiService.putTermin(sessionStorage.getItem("currentSemester"), temp, benutzerId);
+        if (res.status === 200) {
+          getGebuchteTermine(benutzerId);
+        } else {
+          console.log(e);
+        }
+      }
+    }
   };
 
   const columns = [
@@ -64,10 +103,10 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
           //   <GridActionsCellItem
           //     icon={<DeleteIcon />}
           //     label="Stornieren"
-          //     onClick={handleDeleteClick(e)}
+          //     onClick={handleCancelClick(e)}
           //     color="primary"
           //   />,
-          <Button variant="outlined" onClick={handleDeleteClick(e)} size="small">
+          <Button variant="outlined" onClick={handleCancelClick(e)} size="small">
             Stornieren
           </Button>,
         ];
