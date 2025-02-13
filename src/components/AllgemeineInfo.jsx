@@ -6,11 +6,12 @@ import dayjs from "dayjs";
 const AllgemeineInfo = () => {
   const [feierTagList, setFeierTagList] = useState([]);
   const currentSemester = sessionStorage.getItem("currentSemester");
-  const getFeierTage = async () => {
-    const res = await apiService.getFeiertage(currentSemester);
-    setFeierTagList(res.data);
-  };
+
   useEffect(() => {
+    const getFeierTage = async () => {
+      const res = await apiService.getFeiertage(currentSemester);
+      setFeierTagList(res.data);
+    };
     getFeierTage();
   }, []);
   return (
