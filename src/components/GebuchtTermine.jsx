@@ -30,6 +30,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
       Object.entries(rawData).map(([key, value]) => [key, value === null ? "" : value])
     );
     sanitizedData.vformat = sanitizedData.vformat ? sanitizedData.vformat.split(",") : [];
+    sanitizedData.status = "aendert";
     console.log(sanitizedData);
     setTerminToEdit(sanitizedData);
     setOpenForm(true);
@@ -131,12 +132,6 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
             color="primary"
             disabled={e.row.rawData.status === "storniert" ? true : false}
           />,
-          //   <GridActionsCellItem
-          //     icon={<DeleteIcon />}
-          //     label="Stornieren"
-          //     onClick={handleCancelClick(e)}
-          //     color="primary"
-          //   />,
           <Button
             variant="outlined"
             onClick={handleCancelClick(e)}
