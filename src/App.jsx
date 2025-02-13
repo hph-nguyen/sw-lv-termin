@@ -329,6 +329,7 @@ function App() {
                 defaultValue={sessionStorage.getItem("currentSemester")}
                 size="small"
                 onChange={handleSemesterChange}
+                disabled
               >
                 {user.semesterliste.split(",").map((option) => (
                   <MenuItem key={option} value={option}>
