@@ -23,7 +23,7 @@ import * as yup from "yup";
 
 import { FormDatePicker, FormInput, FormSelect } from "../components/formComponents";
 // eslint-disable-next-line no-unused-vars
-import { LV_RHYTHMUS, TIME_PICKER_VON, TIME_PICKER_BIS, SEMESTER, WEEKDAY, VIRTUELLES_FORMAT } from "../dummyData";
+import { LV_RHYTHMUS, TIME_PICKER_VON, TIME_PICKER_BIS, SEMESTER, WEEKDAY, VIRTUELLES_FORMAT } from "../constData";
 import { redAccent } from "../theme";
 
 const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
@@ -195,6 +195,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                   options={VIRTUELLES_FORMAT}
                   onChange={handleChange}
                   multiple={true}
+                  defaultValue={initialValues.vformat}
                   helperText={"Mehrfach wählbar"}
                 />
               </Box>

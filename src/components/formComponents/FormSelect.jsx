@@ -5,6 +5,7 @@ import { useEffect } from "react";
 const SelectWrapper = ({
   name,
   options,
+  span,
   size = "small",
   defaultValue,
   helperText,
@@ -18,10 +19,14 @@ const SelectWrapper = ({
   const handleChange = (evt) => {
     const { value } = evt.target;
     setFieldValue(name, value);
-    // setSelectedValue(value);
   };
+
   useEffect(() => {
-    if (defaultValue) setFieldValue(name, defaultValue);
+    if (defaultValue !== undefined) {
+      setFieldValue(name, multiple ? (Array.isArray(defaultValue) ? defaultValue : []) : defaultValue);
+    } else {
+      setFieldValue(name, multiple ? [] : "");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
 
@@ -31,22 +36,19 @@ const SelectWrapper = ({
     size,
     select: true,
     variant: "outlined",
-    // fullWidth: true,
     helperText: (
       <Typography variant="h7">
         <i>{helperText}</i>
       </Typography>
     ),
-    // defaultValue: defaultValue,
+    value: field.value ?? (multiple ? [] : ""),
     onChange: onChange || handleChange,
-    slotProps: {
-      select: {
-        multiple: multiple,
-      },
+    SelectProps: {
+      multiple: multiple,
     },
   };
 
-  if (meta && meta.touched && meta.error) {
+  if (meta.touched && meta.error) {
     configSelect.error = true;
     configSelect.helperText = (
       <Typography variant="h7">
@@ -56,14 +58,12 @@ const SelectWrapper = ({
   }
 
   return (
-    <TextField {...configSelect}>
-      {options.map((opt) => {
-        return (
-          <MenuItem key={opt.value} value={opt.value}>
-            {opt.label}
-          </MenuItem>
-        );
-      })}
+    <TextField {...configSelect} sx={{ gridColumn: `span ${span}` }}>
+      {options.map((opt) => (
+        <MenuItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </MenuItem>
+      ))}
     </TextField>
   );
 };

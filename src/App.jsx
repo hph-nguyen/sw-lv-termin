@@ -76,8 +76,6 @@ function App() {
     }
   };
 
-  const handleChangeGebuchteTermin = () => {};
-
   const handleSemesterChange = (e) => {
     setSemesterChangeWarn(true);
     sessionStorage.setItem("currentSemester", e.target.value);
@@ -113,6 +111,7 @@ function App() {
           bis: e.bkbis,
           block_titel: e.block_titel,
           wochentag: "-",
+          rhythmus: "BK",
         };
       });
     }
@@ -339,7 +338,7 @@ function App() {
               </TextField>
 
               <Button variant="contained" onClick={handleUserChange}>
-                Benutzer Wechseln
+                Ausloggen
               </Button>
 
               <Box sx={{ gridColumn: "span 4" }}>
@@ -412,8 +411,9 @@ function App() {
         onClose={() => setUserChangeWarn(false)}
         content={
           <ConfirmDialog
-            msg={
-              "Sind Sie sicher, dass Sie den Benutzer wechseln möchten? Alle in der aktuellen Sitzung nicht gespeicherten Daten werden gelöscht!"
+            msg={"Sind Sie sicher, dass Sie ausloggen möchten?"}
+            subMsg={
+              sessionStorage.getItem("tableData") ? "Alle ungespeicherte Daten in Übersicht-Tabelle wird gelöscht!" : ""
             }
             onConfirm={() => {
               sessionStorage.clear();

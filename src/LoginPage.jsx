@@ -5,8 +5,7 @@ import { Box, Button } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import * as apiService from "../src/services/apiService";
-import ConfirmDialog from "./components/shared/ConfirmDialog";
-import MUIDialog from "./components/shared/MUIDialog";
+import Header from "./components/Header";
 
 export const LoginPage = () => {
   // const [uid, setUid] = useState("");
@@ -14,18 +13,33 @@ export const LoginPage = () => {
   const [errMsg, setErrMsg] = useState("");
   const [isError, setIsError] = useState(false);
   const { login } = useAuth();
-  const [openInfo, setOpenInfo] = useState(false);
 
   const handleLogin = async (e) => {
-    const res = await apiService.getUser(e.uid);
-    if (res.status === 200) {
-      console.log(res.data);
-      await login(res.data);
-      console.log(res.data.semesterliste);
+    try {
+      // Check if the user exists
+      const userRes = await apiService.getUser(e.uid);
+
+      if (userRes.status !== 200) {
+        setErrMsg("Benutzer nicht gefunden");
+        setIsError(true);
+        return;
+      }
+      console.log(userRes.data);
+
+      // Check if code Valid
+      const zugangRes = await apiService.postSwZugang(e.semester, { code: e.code, semestername: e.semester });
+      if (zugangRes.status !== 200) {
+        setErrMsg("Ungültiger Zugangscode");
+        setIsError(true);
+        return;
+      }
+
+      await login(userRes.data);
       sessionStorage.setItem("currentSemester", e.semester);
-    } else {
-      // alert("Invalid username");
-      setOpenInfo(true);
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrMsg("Ein Fehler ist aufgetreten");
+      setIsError(true);
     }
   };
 
@@ -57,23 +71,13 @@ export const LoginPage = () => {
         alignItems: "center",
       }}
     >
-      {/* <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input id="username" type="text" value={uid} onChange={(e) => setUid(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="semester">Semester:</label>
-          <input id="semester" type="text" value={semester} onChange={(e) => setSemester(e.target.value)} />
-        </div>
-        <button type="submit">Login</button>
-      </form> */}
-
+      <Header />
       <Formik onSubmit={handleLogin} initialValues={initialValues} validationSchema={checkoutSchema}>
         {({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
             <Box display="grid" gap="10px" mt={"20px"}>
               <FormInput name={"uid"} label="Benutzername" size="small" autoComplete="off" />
+              <FormInput name={"code"} label="Zugangscode" size="small" autoComplete="off" maxLength={6} />
               <FormSelect name={"semester"} label="Semester" options={semester} size="small" defaultValue={""} />
               <Button type="submit" color="primary" variant="contained">
                 Anmelden
@@ -93,21 +97,18 @@ export const LoginPage = () => {
           </form>
         )}
       </Formik>
-      <MUIDialog
-        onOpen={openInfo}
-        onClose={() => setOpenInfo(false)}
-        content={<ConfirmDialog type="warning" msg={`Benutzer nicht gefunden`} hideButton={true} />}
-      />
     </Box>
   );
 };
 
 const initialValues = {
   uid: "",
+  code: "",
   semester: "",
 };
 
 const checkoutSchema = yup.object().shape({
   semester: yup.string().required("Bitte wählen Sie das Semester aus"),
   uid: yup.string().required("Bitte geben Sie Ihren Benutzenamen ein"),
+  code: yup.string().required("Bitte geben Sie den Zugangscode ein"),
 });

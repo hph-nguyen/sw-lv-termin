@@ -18,3 +18,8 @@ export const dauerBerechnung = (von, bis) => {
   const endTime = dayjs(bis, "HH:mm");
   return endTime.diff(startTime, "minute");
 };
+
+export const formatDauerZuEndzeit = (anfangszeit, dauer) => {
+  const startTime = dayjs().hour(anfangszeit.split(":")[0]).minute(anfangszeit.split(":")[1]);
+  return startTime.add(dauer, "minute").format("HH:mm");
+};

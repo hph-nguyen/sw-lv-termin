@@ -11,7 +11,7 @@ import MUIDialog from "./shared/MUIDialog";
 import TerminChangeForm from "./TerminChangeForm";
 import * as apiService from "../services/apiService";
 // import ConfirmDialog from "./shared/ConfirmDialog";
-import { numberToWeekday, formatTimeRange } from "../services/timeUtils";
+import { numberToWeekday, formatTimeRange, dauerBerechnung } from "../services/timeUtils";
 
 const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
   const [rows, setRows] = useState(rowsData);
@@ -21,9 +21,33 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
   useEffect(() => {}, [rowsData]);
 
   const handleEditClick = (e) => () => {
-    console.log(e.row.rawData);
-    setTerminToEdit(e.row.rawData);
+    if (!e?.row?.rawData) return "";
+
+    const rawData = e.row.rawData;
+
+    // Replace null values with empty strings
+    const sanitizedData = Object.fromEntries(
+      Object.entries(rawData).map(([key, value]) => [key, value === null ? "" : value])
+    );
+    sanitizedData.vformat = sanitizedData.vformat ? sanitizedData.vformat.split(",") : [];
+    console.log(sanitizedData);
+    setTerminToEdit(sanitizedData);
     setOpenForm(true);
+  };
+
+  const handleChange = async (e) => {
+    const benId = JSON.parse(sessionStorage.getItem("user")).benutzer_id;
+    const res = await apiService.putTermin(
+      sessionStorage.getItem("currentSemester"),
+      { ...e, vformat: e.vformat.toString(), dauer: dauerBerechnung(e.anfangszeit, e.bis) },
+      benId
+    );
+    if (res.status === 200) {
+      setOpenForm(false);
+      getGebuchteTermine(benId);
+    } else {
+      console.log(res);
+    }
   };
 
   const getGebuchteTermine = async (benutzerId) => {
@@ -58,7 +82,13 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
 
   const handleCancelClick = (e) => async () => {
     if (window.confirm("Sind sie sicher, diese Buchung zu stornieren?")) {
+      console.log(e);
       const temp = { ...e.row.rawData, status: "storniert" };
+      Object.keys(temp).forEach((key) => {
+        if (temp[key] === null) {
+          temp[key] = "";
+        }
+      });
       const benutzerId = JSON.parse(sessionStorage.getItem("user")).benutzer_id;
       if (benutzerId) {
         const res = await apiService.putTermin(sessionStorage.getItem("currentSemester"), temp, benutzerId);
@@ -99,6 +129,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
             className="textPrimary"
             onClick={handleEditClick(e)}
             color="primary"
+            disabled={e.row.rawData.status === "storniert" ? true : false}
           />,
           //   <GridActionsCellItem
           //     icon={<DeleteIcon />}
@@ -106,7 +137,12 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
           //     onClick={handleCancelClick(e)}
           //     color="primary"
           //   />,
-          <Button variant="outlined" onClick={handleCancelClick(e)} size="small">
+          <Button
+            variant="outlined"
+            onClick={handleCancelClick(e)}
+            size="small"
+            disabled={e.row.rawData.status === "storniert" ? true : false}
+          >
             Stornieren
           </Button>,
         ];
@@ -138,6 +174,9 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
             },
             [`.${gridClasses.cell}.angefragt`]: {
               backgroundColor: "#6fbf7391",
+            },
+            [`.${gridClasses.cell}.aendert`]: {
+              backgroundColor: "#ffd32c75",
             },
           }}
         >
@@ -178,6 +217,8 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
                     return "angefragt";
                   case "storniert":
                     return "storniert";
+                  case "aendert":
+                    return "aendert";
                   default:
                     return "";
                 }
@@ -189,7 +230,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
       <MUIDialog
         onOpen={openForm}
         onClose={() => setOpenForm(false)}
-        content={<TerminChangeForm initialValues={terminToEdit} />}
+        content={<TerminChangeForm initialValues={terminToEdit} onSubmit={handleChange} />}
         disableBackdropClick="true"
         title={"Test Title"}
       />

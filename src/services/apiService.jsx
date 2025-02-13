@@ -66,3 +66,12 @@ export const putTermin = async (semester, termin, benutzerId) => {
     return err;
   }
 };
+
+export const postSwZugang = async (semester, zugangscode) => {
+  try {
+    const res = await httpRequest.post(`${checkSemesterSlash(semester)}/swZugang`, zugangscode);
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
