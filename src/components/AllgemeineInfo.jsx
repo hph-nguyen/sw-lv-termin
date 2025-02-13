@@ -13,7 +13,7 @@ const AllgemeineInfo = () => {
       setFeierTagList(res.data);
     };
     getFeierTage();
-  }, []);
+  }, [currentSemester]);
   return (
     <div>
       <MUIAccordion header={"Hinweis für allgemeine Vorlesungszeiten"}>
