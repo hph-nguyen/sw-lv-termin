@@ -6,7 +6,6 @@ import { LV_RHYTHMUS, TIME_PICKER_BIS, TIME_PICKER_VON, VIRTUELLES_FORMAT, WEEKD
 import { formatDauerZuEndzeit } from "../services/timeUtils";
 import { useState } from "react";
 
-/* eslint-disable no-unused-vars */
 const TerminChangeForm = ({ onSubmit, initialValues = initVal }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [rhythmusInfo, setRhythmusInfo] = useState(false);
