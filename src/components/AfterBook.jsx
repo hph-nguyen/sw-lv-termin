@@ -10,7 +10,7 @@ export const AfterBook = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleAuslogen = () => {
+  const handleAusloggen = () => {
     sessionStorage.clear();
     login(null);
     navigate("/");
@@ -62,7 +62,7 @@ export const AfterBook = () => {
             <Button variant="contained" sx={{ marginRight: 1 }}>
               Zurück
             </Button>
-            <Button variant="contained" onClick={handleAuslogen}>
+            <Button variant="contained" onClick={handleAusloggen}>
               Ausloggen
             </Button>
           </Link>

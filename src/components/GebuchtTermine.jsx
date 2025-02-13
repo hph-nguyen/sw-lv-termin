@@ -147,7 +147,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
 
   return (
     <Box>
-      <MUIAccordion header={"Gebuchte Wunschtermine"} defaultExpanded={defaultExpanded}>
+      <MUIAccordion header={"Gebuchte Termine"} defaultExpanded={defaultExpanded}>
         <Box
           height={300}
           sx={{

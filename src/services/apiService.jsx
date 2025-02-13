@@ -75,3 +75,12 @@ export const postSwZugang = async (semester, zugangscode) => {
     return err;
   }
 };
+
+export const getFeiertage = async (semester) => {
+  try {
+    const res = await httpRequest.get(`${checkSemesterSlash(semester)}/feiertage`);
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
