@@ -42,7 +42,11 @@ const TerminChangeForm = ({ onSubmit, initialValues = initVal }) => {
                 defaultValue={formatDauerZuEndzeit(initialValues.anfangszeit, initialValues.dauer)}
               />
               <FormSelect label="Wochentag" name="wochentag" options={WEEKDAY} defaultValue={initialValues.wochentag} />
-              <FormDatePicker name="start_datum" label="1.Tag (Opt.)" />
+              {initialValues.rhythmus === "BK" ? (
+                <FormDatePicker name="start_datum" label="Datum" />
+              ) : (
+                <FormDatePicker name="start_datum" label="1.Tag (Opt.)" />
+              )}
               <FormSelect
                 span="2"
                 name="rhythmus"

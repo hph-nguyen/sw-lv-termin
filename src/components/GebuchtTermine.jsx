@@ -30,7 +30,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
       Object.entries(rawData).map(([key, value]) => [key, value === null ? "" : value])
     );
     sanitizedData.vformat = sanitizedData.vformat ? sanitizedData.vformat.split(",") : [];
-    sanitizedData.status = "aendert";
+    sanitizedData.status = "geaendert";
     console.log(sanitizedData);
     setTerminToEdit(sanitizedData);
     setOpenForm(true);
@@ -170,7 +170,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
             [`.${gridClasses.cell}.angefragt`]: {
               backgroundColor: "#6fbf7391",
             },
-            [`.${gridClasses.cell}.aendert`]: {
+            [`.${gridClasses.cell}.geaendert`]: {
               backgroundColor: "#ffd32c75",
             },
           }}
@@ -212,8 +212,8 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
                     return "angefragt";
                   case "storniert":
                     return "storniert";
-                  case "aendert":
-                    return "aendert";
+                  case "geaendert":
+                    return "geaendert";
                   default:
                     return "";
                 }

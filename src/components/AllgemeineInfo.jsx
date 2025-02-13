@@ -28,14 +28,12 @@ const AllgemeineInfo = () => {
           )}
         </strong>
         <br />
-        {feierTagList.map((e) => {
-          return (
-            <>
-              {dayjs(e.tag).format("DD.MM.YY")} - {e.beschreibung}
-              <br />
-            </>
-          );
-        })}
+        {feierTagList.map((e, index) => (
+          <div key={e.id || index}>
+            {dayjs(e.tag).format("DD.MM.YY")} - {e.beschreibung}
+            <br />
+          </div>
+        ))}
         Darüber hinaus sind folgende Zeiten bitte{" "}
         <i>
           <u>nur nach vorheriger Absprache</u>

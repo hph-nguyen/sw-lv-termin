@@ -49,9 +49,12 @@ function App() {
     const sendData = prepareDataForSendTermine(
       sessionStorage.getItem("terminList") ? JSON.parse(sessionStorage.getItem("terminList")) : null
     );
+
     if (sendData) {
       const result = await apiService.postNewTerminListe(currentSemester, sendData);
+
       if (result.status === 200) {
+        // Data to show in AfterBook
         const infoData = sendData.map((data) => {
           return {
             semester: sessionStorage.getItem("currentSemester"),
@@ -59,7 +62,7 @@ function App() {
             lv_titel: data.lv_titel ? data.lv_titel : data.lv_frei_titel,
             block_titel: data.block_titel,
             rhythmus: data.rhythmus,
-            lv_termin: `${data.wochentag ? numberToWeekday(data.wochentag) : data.start_datum}, ${formatTimeRange(
+            start_datum: `${data.wochentag ? numberToWeekday(data.wochentag) : data.start_datum}, ${formatTimeRange(
               data.anfangszeit,
               data.dauer
             )} `,
@@ -110,7 +113,7 @@ function App() {
           von: e.bkvon,
           bis: e.bkbis,
           block_titel: e.block_titel,
-          wochentag: "-",
+          wochentag: "",
           rhythmus: "BK",
         };
       });
@@ -218,6 +221,7 @@ function App() {
 
   const prepareDataForSendTermine = (terminList = []) => {
     // const terminList = sessionStorage.getItem("terminList") ? JSON.parse(sessionStorage.getItem("terminList")) : null;
+    console.log(terminList);
     let sendData = [];
     if (terminList) {
       sendData = terminList.map(({ id, von, bis, ...rest }) => {
@@ -229,7 +233,7 @@ function App() {
           lv_titel: lv_id ? rest.lv_titel : "",
           lv_frei_titel: lv_id ? "" : rest.lv_titel,
           anfangszeit: von,
-          datum: rest.wochentag ? rest.start_datum : rest.datum,
+          start_datum: rest.wochentag ? rest.start_datum : rest.datum,
           rhythmus: rest.rhythmus === "WZ" ? "W" : rest.rhythmus,
           dauer: dauerBerechnung(von, bis),
           dozent: `${user.vorname}, ${user.name}`,
