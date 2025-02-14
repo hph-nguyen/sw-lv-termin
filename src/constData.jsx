@@ -13,18 +13,18 @@ export const WEEKDAY = [
 ];
 
 export const LV_RHYTHMUS = [
-  { value: "W", label: "wöchentlich" },
-  { value: "WZ", label: "wöchentlich mit Zusatzterminen" },
-  {
-    value: "VZ2",
-    label: "wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine",
-  },
+  { value: "W", label: "W - wöchentlich" },
+  { value: "WZ", label: "W und BK - wöchentlich mit Zusatzterminen" },
   {
     value: "VZ",
-    label: "vierzehntägig, dafür LV mit doppelter SWS-Zahl",
+    label: "VZ - vierzehntägig, dafür LV mit doppelter SWS-Zahl",
+  },
+  {
+    value: "VZ2",
+    label: "VZ2 - wöchentlich, doppelte SWS-Zahl, aber mit halbierter Anzahl Termine",
   },
 
-  { value: "BK", label: "Blockveranstaltung" },
+  { value: "BK", label: "BK - Blockveranstaltung" },
 ];
 
 export const TIME_PICKER_VON = [

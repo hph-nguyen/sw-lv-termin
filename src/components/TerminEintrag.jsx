@@ -287,7 +287,7 @@ const TerminEintrag = ({ onSubmit, moduleList = [] }) => {
                         <Add />
                       </IconButton>
                     </Box>
-                    <TableContainer component={Paper} sx={{ gridColumn: "span 2", maxHeight: "250px" }}>
+                    <TableContainer component={Paper} sx={{ gridColumn: "span 3", maxHeight: "250px" }}>
                       <Table stickyHeader size="small">
                         <TableHead sx={{ backgroundColor: "background.default" }}>
                           <TableRow>

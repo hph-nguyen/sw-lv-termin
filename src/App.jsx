@@ -165,6 +165,7 @@ function App() {
       if (Array.isArray(res.data)) {
         const terminList = res.data.map((el) => ({
           id: el.id,
+          dozent: el.dozent,
           module: el.modul_titel,
           lv_titel: el.lv_titel ? el.lv_titel : el.lv_frei_titel,
           block_titel: el.block_titel,
@@ -172,7 +173,7 @@ function App() {
           vformat: el.vformat,
           lv_termin: el.wochentag
             ? `${numberToWeekday(el.wochentag)},  ${formatTimeRange(el.anfangszeit, el.dauer)}`
-            : `${el.start_datum},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
+            : `${dayjs(el.start_datum).format("DD.MM.YYYY")},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
           start_datum: el.wochentag ? el.start_datum : "",
           raum_wunsch: el.raum_wunsch,
           co_dozent: el.co_dozent,

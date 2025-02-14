@@ -12,6 +12,7 @@ import TerminChangeForm from "./TerminChangeForm";
 import * as apiService from "../services/apiService";
 // import ConfirmDialog from "./shared/ConfirmDialog";
 import { numberToWeekday, formatTimeRange, dauerBerechnung } from "../services/timeUtils";
+import dayjs from "dayjs";
 
 const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
   const [rows, setRows] = useState(rowsData);
@@ -31,7 +32,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
     );
     sanitizedData.vformat = sanitizedData.vformat ? sanitizedData.vformat.split(",") : [];
     sanitizedData.status = "geaendert";
-    console.log(sanitizedData);
+    // console.log(sanitizedData);
     setTerminToEdit(sanitizedData);
     setOpenForm(true);
   };
@@ -64,7 +65,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
           vformat: el.vformat,
           lv_termin: el.wochentag
             ? `${numberToWeekday(el.wochentag)},  ${formatTimeRange(el.anfangszeit, el.dauer)}`
-            : `${el.start_datum},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
+            : `${dayjs(el.start_datum).format("DD.MM.YYYY")},  ${formatTimeRange(el.anfangszeit, el.dauer)}`,
           start_datum: el.wochentag ? el.start_datum : "",
           raum_wunsch: el.raum_wunsch,
           co_dozent: el.co_dozent,
@@ -103,10 +104,11 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
   };
 
   const columns = [
+    { field: "dozent", headerName: "Dozent", editable: false, type: "string", flex: 0.5 },
     { field: "module", headerName: "Modul", editable: false, type: "string", flex: 1 },
     { field: "lv_titel", headerName: "LV-Titel", editable: false, type: "string", flex: 1 },
     { field: "block_titel", headerName: "BK-Titel (Opt.)", type: "string", flex: 1 },
-    { field: "rhythmus", headerName: "Rhythmus", editable: false, type: "string", flex: 1 },
+    { field: "rhythmus", headerName: "Rhythmus", editable: false, type: "string", flex: 0.3 },
     { field: "lv_termin", headerName: "LV-Termin", editable: false, type: "string", flex: 1 },
     { field: "start_datum", headerName: "1. Tag", type: "string", flex: 0.5 },
     { field: "raum_wunsch", headerName: "Raumwunsch", type: "string", flex: 0.5 },
@@ -187,6 +189,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
                   anmerkungen: false,
                   vformat: false,
                   start_datum: false,
+                  dozent: false,
                 },
               },
               density: "compact",
@@ -227,7 +230,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
         onClose={() => setOpenForm(false)}
         content={<TerminChangeForm initialValues={terminToEdit} onSubmit={handleChange} />}
         disableBackdropClick="true"
-        title={"Test Title"}
+        title={"Gebuchten Termin ändern"}
       />
     </Box>
   );
