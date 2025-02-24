@@ -40,8 +40,8 @@ export default function TextfieldWrapper({ name, span, helperText, maxLength, ..
     fullWidth: true,
     variant: "outlined",
     error: meta.touched && Boolean(meta.error),
-    inputProps: {
-      maxLength: maxLength || undefined,
+    slotProps: {
+      htmlInput: { maxLength: maxLength | undefined },
     },
   };
 
