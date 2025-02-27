@@ -24,7 +24,7 @@ export const LoginPage = () => {
         setIsError(true);
         return;
       }
-      console.log(userRes.data);
+      // console.log(userRes.data);
 
       // Check if code Valid
       const zugangRes = await apiService.postSwZugang(e.semester, { code: e.code, semestername: e.semester });
