@@ -8,11 +8,11 @@ export const AfterBook = () => {
   const data = location.state?.data;
   const isDataValidArray = Array.isArray(data) && data.length > 0;
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { logout } = useAuth();
 
   const handleAusloggen = () => {
     sessionStorage.clear();
-    login(null);
+    logout();
     navigate("/");
   };
 

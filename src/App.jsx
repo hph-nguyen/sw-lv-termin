@@ -24,7 +24,7 @@ import { dauerBerechnung, formatTimeRange, numberToWeekday } from "./services/ti
 import { useNavigate } from "react-router-dom";
 
 function App() {
-  const { login } = useAuth();
+  const { logout } = useAuth();
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user")));
   const [tableData, setTableData] = useState(
@@ -166,7 +166,7 @@ function App() {
         const terminList = res.data.map((el) => ({
           id: el.id,
           dozent: el.dozent,
-          module: el.modul_titel,
+          module: `${el.modul_id} ${el.modul_titel}`,
           lv_titel: el.lv_titel ? el.lv_titel : el.lv_frei_titel,
           block_titel: el.block_titel,
           rhythmus: el.rhythmus,
@@ -423,7 +423,7 @@ function App() {
             }
             onConfirm={() => {
               sessionStorage.clear();
-              login(null);
+              logout();
               setUserChangeWarn(false);
             }}
             onDecline={() => setUserChangeWarn(false)}

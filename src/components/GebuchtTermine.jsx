@@ -58,7 +58,7 @@ const GebuchtTermine = ({ rowsData, defaultExpanded = true }) => {
       if (Array.isArray(res.data)) {
         const terminList = res.data.map((el) => ({
           id: el.id,
-          module: el.modul_titel,
+          module: `${el.modul_id} ${el.modul_titel}`,
           lv_titel: el.lv_titel ? el.lv_titel : el.lv_frei_titel,
           block_titel: el.block_titel,
           rhythmus: el.rhythmus,
