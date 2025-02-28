@@ -69,7 +69,7 @@ function App() {
             vformat: data.vformat,
           };
         });
-        navigate("/sw-lv-termin/info", { state: { data: infoData } });
+        navigate("/info", { state: { data: infoData } });
         sessionStorage.removeItem("terminList");
         sessionStorage.removeItem("tableData");
       } else {

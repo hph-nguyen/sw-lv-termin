@@ -78,7 +78,7 @@ export const LoginPage = () => {
         Fakultät Sozialwissenschaften
       </Typography>
       <Typography variant="h3" color="primary" mt={3}>
-        <strong>Terminbuchung</strong>
+        <strong>Terminbuchung für Lehrveranstaltungen</strong>
       </Typography>
       <Avatar sx={{ m: 2, width: 70, height: 70, backgroundColor: redAccent[500] }}>
         <LockPerson fontSize="large" />

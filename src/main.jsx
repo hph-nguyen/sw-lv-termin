@@ -42,7 +42,7 @@ createRoot(document.getElementById("root")).render(
               }
             />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/sw-lv-termin/info" element={<AfterBook />} />
+            <Route path="/info" element={<AfterBook />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
