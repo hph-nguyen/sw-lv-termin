@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./components/hooks/useAuth";
 import { FormInput, FormSelect } from "./components/formComponents";
-import { Box, Button } from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import * as apiService from "../src/services/apiService";
 import Header from "./components/Header";
+import { LockPerson } from "@mui/icons-material";
+import { redAccent } from "./theme";
 
 export const LoginPage = () => {
   // const [uid, setUid] = useState("");
@@ -72,6 +74,15 @@ export const LoginPage = () => {
       }}
     >
       <Header />
+      <Typography variant="h4" color="primary" mt={1}>
+        Fakultät Sozialwissenschaften
+      </Typography>
+      <Typography variant="h3" color="primary" mt={3}>
+        <strong>Terminbuchung</strong>
+      </Typography>
+      <Avatar sx={{ m: 2, width: 70, height: 70, backgroundColor: redAccent[500] }}>
+        <LockPerson fontSize="large" />
+      </Avatar>
       <Formik onSubmit={handleLogin} initialValues={initialValues} validationSchema={checkoutSchema}>
         {({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
